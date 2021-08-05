@@ -1,0 +1,660 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+  <link rel="stylesheet" href="/lib/pace/pace-theme-minimal.min.css">
+  <script src="/lib/pace/pace.min.js"></script>
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"sophimp.gitee.io","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="本想着将Redmi K30 pro 移植出来了，为LineageOS 和 Mokee 贡献一波，然而现实是ROM 并没有移植成功，gerrit也没机会使用，就当再开一坑， 后面有机会再填吧。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="gerrit 的使用">
+<meta property="og:url" content="http://sophimp.gitee.io/2020/06/13/android/tools/gerrit_usage/index.html">
+<meta property="og:site_name" content="Sophimp&#39;s Space">
+<meta property="og:description" content="本想着将Redmi K30 pro 移植出来了，为LineageOS 和 Mokee 贡献一波，然而现实是ROM 并没有移植成功，gerrit也没机会使用，就当再开一坑， 后面有机会再填吧。">
+<meta property="article:published_time" content="2020-06-13T13:38:29.000Z">
+<meta property="article:modified_time" content="2021-03-15T03:49:47.932Z">
+<meta property="article:author" content="Sophimp">
+<meta property="article:tag" content="rom">
+<meta property="article:tag" content="gerrit">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="http://sophimp.gitee.io/2020/06/13/android/tools/gerrit_usage/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-Hans'
+  };
+</script>
+
+  <title>gerrit 的使用 | Sophimp's Space</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+	
+	<script type="text/javascript" src="//cdn.bootcss.com/canvas-nest.js/1.0.0/canvas-nest.min.js"></script>
+	
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Sophimp's Space</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">coding & thinking</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+  <a href="https://github.com/sophimp" class="github-corner" title="Follow me on GitHub" aria-label="Follow me on GitHub" rel="noopener" target="_blank"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
+    <link itemprop="mainEntityOfPage" href="http://sophimp.gitee.io/2020/06/13/android/tools/gerrit_usage/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.png">
+      <meta itemprop="name" content="Sophimp">
+      <meta itemprop="description" content="A dream begin">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Sophimp's Space">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          gerrit 的使用
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2020-06-13 21:38:29" itemprop="dateCreated datePublished" datetime="2020-06-13T21:38:29+08:00">2020-06-13</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2021-03-15 11:49:47" itemprop="dateModified" datetime="2021-03-15T11:49:47+08:00">2021-03-15</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Android/" itemprop="url" rel="index"><span itemprop="name">Android</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="Views" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">Views: </span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span>
+            <div class="post-description">本想着将Redmi K30 pro 移植出来了，为LineageOS 和 Mokee 贡献一波，然而现实是ROM 并没有移植成功，gerrit也没机会使用，就当再开一坑， 后面有机会再填吧。</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>gerrit 项目管理工具, 方便于代码review, merge</p>
+<h2 id="Gerrit-文档"><a href="#Gerrit-文档" class="headerlink" title="Gerrit 文档"></a>Gerrit 文档</h2><p>This is a Gerrit guide that is dedicated to Gerrit end-users. It explains the standard Gerrit workflows and how a user can adapt Gerrit to personal preferences.</p>
+<p>It is expected that readers know about Git and that they are familiar with basic git commands and workflows.</p>
+<h3 id="What-is-Gerrit"><a href="#What-is-Gerrit" class="headerlink" title="What is Gerrit?"></a>What is Gerrit?</h3><p>Gerrit is a Git server that provides access control for the hosted Git repositories and a web front-end for doing code review. Code review is a core functionality of Gerrit, but still it is optional and teams can decide to work without code review.</p>
+<p>Gerrit 是一个 Git 服务, 它提供了访问控制git仓库的能力和一个可代码review的网页前端. </p>
+<h3 id="Tools"><a href="#Tools" class="headerlink" title="Tools"></a>Tools</h3><p>Gerrit uses the git protocol. This means in order to work with Gerrit you do not need to install any Gerrit client, but having a regular git client, such as the git command line or EGit in Eclipse, is sufficient.</p>
+<p>Still there are some client-side tools for Gerrit, which can be used optionally:</p>
+<p>Mylyn Gerrit Connector: Gerrit integration with Mylyn</p>
+<p>Gerrit IntelliJ Plugin: Gerrit integration with the IntelliJ Platform</p>
+<p>mGerrit: Android client for Gerrit</p>
+<p>Gertty: Console-based interface for Gerrit</p>
+<p>Clone Gerrit Project<br>Cloning a Gerrit project is done the same way as cloning any other git repository by using the git clone command.</p>
+<p>Clone Gerrit Project<br>  $ git clone ssh://gerrithost:29418/RecipeBook.git RecipeBook<br>  Cloning into RecipeBook…<br>The URL for cloning the project can be found in the Gerrit web UI under Projects &gt; List &gt; <project-name> &gt; General.</p>
+<p>For git operations Gerrit supports the SSH and the HTTP/HTTPS protocols.</p>
+<p>NOTE<br>To use SSH you may need to configure your SSH public key in your Settings.<br>Code Review Workflow<br>With Gerrit Code Review means to review every commit before it is accepted into the code base. The author of a code modification uploads a commit as a change to Gerrit. In Gerrit each change is stored in a staging area where it can be checked and reviewed. Only when it is approved and submitted it gets applied to the code base. If there is feedback on a change, the author can improve the code modification by amending the commit and uploading the new commit as a new patch set. This way a change is improved iteratively and it is applied to the code base only when is ready.</p>
+<p>Upload a Change<br>Uploading a change to Gerrit is done by pushing a commit to Gerrit. The commit must be pushed to a ref in the refs/for/ namespace which defines the target branch: refs/for/<target-branch>. The magic refs/for/ prefix allows Gerrit to differentiate commits that are pushed for review from commits that are pushed directly into the repository, bypassing code review. For the target branch it is sufficient to specify the short name, e.g. master, but you can also specify the fully qualified branch name, e.g. refs/heads/master.</p>
+<p>Push for Code Review<br>  $ git commit<br>  $ git push origin HEAD:refs/for/master</p>
+<p>  // this is the same as:<br>  $ git commit<br>  $ git push origin HEAD:refs/for/refs/heads/master<br>Push with bypassing Code Review<br>  $ git commit<br>  $ git push origin HEAD:master</p>
+<p>  // this is the same as:<br>  $ git commit<br>  $ git push origin HEAD:refs/heads/master<br>NOTE<br>If pushing to Gerrit fails consult the Gerrit documentation that explains the error messages.<br>When a commit is pushed for review, Gerrit stores it in a staging area which is a branch in the special refs/changes/ namespace. A change ref has the format refs/changes/XX/YYYY/ZZ where YYYY is the numeric change number, ZZ is the patch set number and XX is the last two digits of the numeric change number, e.g. refs/changes/20/884120/1. Understanding the format of this ref is not required for working with Gerrit.</p>
+<p>Using the change ref git clients can fetch the corresponding commit, e.g. for local verification.</p>
+<p>Fetch Change<br>  $ git fetch <a href="https://gerrithost/myProject" target="_blank" rel="noopener">https://gerrithost/myProject</a> refs/changes/74/67374/2 &amp;&amp; git checkout FETCH_HEAD<br>NOTE<br>The fetch command can be copied from the download commands in the change screen.<br>The refs/for/ prefix is used to map the Gerrit concept of “Pushing for Review” to the git protocol. For the git client it looks like every push goes to the same branch, e.g. refs/for/master but in fact for each commit that is pushed to this ref Gerrit creates a new branch under the refs/changes/ namespace. In addition Gerrit creates an open change.</p>
+<p>A change consists of a Change-Id, meta data (owner, project, target branch etc.), one or more patch sets, comments and votes. A patch set is a git commit. Each patch set in a change represents a new version of the change and replaces the previous patch set. Only the latest patch set is relevant. This means all failed iterations of a change will never be applied to the target branch, but only the last patch set that is approved is integrated.</p>
+<p>The Change-Id is important for Gerrit to know whether a commit that is pushed for code review should create a new change or whether it should create a new patch set for an existing change.</p>
+<p>The Change-Id is a SHA-1 that is prefixed with an uppercase I. It is specified as footer in the commit message (last paragraph):</p>
+<p>  Improve foo widget by attaching a bar.</p>
+<p>  We want a bar, because it improves the foo by providing more<br>  wizbangery to the dowhatimeanery.</p>
+<p>  Bug: #42<br>  Change-Id: Ic8aaa0728a43936cd4c6e1ed590e01ba8f0fbf5b<br>  Signed-off-by: A. U. Thor <a href="mailto:&#97;&#x75;&#116;&#x68;&#111;&#114;&#64;&#101;&#x78;&#x61;&#109;&#x70;&#x6c;&#x65;&#46;&#x63;&#x6f;&#109;">&#97;&#x75;&#116;&#x68;&#111;&#114;&#64;&#101;&#x78;&#x61;&#109;&#x70;&#x6c;&#x65;&#46;&#x63;&#x6f;&#109;</a><br>If a commit that has a Change-Id in its commit message is pushed for review, Gerrit checks if a change with this Change-Id already exists for this project and target branch, and if yes, Gerrit creates a new patch set for this change. If not, a new change with the given Change-Id is created.</p>
+<p>If a commit without Change-Id is pushed for review, Gerrit creates a new change and generates a Change-Id for it. Since in this case the Change-Id is not included in the commit message, it must be manually inserted when a new patch set should be uploaded. Most projects already require a Change-Id when pushing the very first patch set. This reduces the risk of accidentally creating a new change instead of uploading a new patch set. Any push without Change-Id then fails with missing Change-Id in commit message footer.</p>
+<p>Amending and rebasing a commit preserves the Change-Id so that the new commit automatically becomes a new patch set of the existing change, when it is pushed for review.</p>
+<p>Push new Patch Set<br>  $ git commit –amend<br>  $ git push origin HEAD:refs/for/master<br>Change-Ids are unique for a branch of a project. E.g. commits that fix the same issue in different branches should have the same Change-Id, which happens automatically if a commit is cherry-picked to another branch. This way you can search by the Change-Id in the Gerrit web UI to find a fix in all branches.</p>
+<p>Change-Ids can be created automatically by installing the commit-msg hook as described in the Change-Id documentation.</p>
+<p>Instead of manually installing the commit-msg hook for each git repository, you can copy it into the git template. Then it is automatically copied to every newly cloned repository.</p>
+<p>Review Change<br>After uploading a change for review reviewers can inspect it via the Gerrit web UI. Reviewers can see the code delta and comment directly in the code on code blocks or lines. They can also post summary comments and vote on review labels. The documentation of the review UI explains the screens and controls for doing code reviews.</p>
+<p>There are several options to control how patch diffs should be rendered. Users can configure their preferences in the diff preferences.</p>
+<p>Upload a new Patch Set<br>If there is feedback from code review and a change should be improved a new patch set with the reworked code should be uploaded.</p>
+<p>This is done by amending the commit of the last patch set. If needed this commit can be fetched from Gerrit by using the fetch command from the download commands in the change screen.</p>
+<p>It is important that the commit message contains the Change-Id of the change that should be updated as a footer (last paragraph). Normally the commit message already contains the correct Change-Id and the Change-Id is preserved when the commit is amended.</p>
+<p>Push Patch Set<br>  // fetch and checkout the change<br>  // (checkout command copied from change screen)<br>  $ git fetch <a href="https://gerrithost/myProject" target="_blank" rel="noopener">https://gerrithost/myProject</a> refs/changes/74/67374/2 &amp;&amp; git checkout FETCH_HEAD</p>
+<p>  // rework the change<br>  $ git add <path-of-reworked-file><br>  …</p>
+<p>  // amend commit<br>  $ git commit –amend</p>
+<p>  // push patch set<br>  $ git push origin HEAD:refs/for/master<br>NOTE<br>Never amend a commit that is already part of a central branch.<br>Pushing a new patch set triggers email notification to the reviewers.</p>
+<p>Developing multiple Features in parallel<br>Code review takes time, which can be used by the change author to implement other features. Each feature should be implemented in its own local feature branch that is based on the current HEAD of the target branch. This way there is no dependency to open changes and new features can be reviewed and applied independently. If wanted, it is also possible to base a new feature on an open change. This will create a dependency between the changes in Gerrit and each change can only be applied if all its predecessor are applied as well. Dependencies between changes can be seen from the Related Changes tab on the change screen.</p>
+<p>Watching Projects<br>To get to know about new changes you can watch the projects that you are interested in. For watched projects Gerrit sends you email notifications when a change is uploaded or modified. You can decide on which events you want to be notified and you can filter the notifications by using change search expressions. For example ‘branch:master file:^.*.txt$’ would send you email notifications only for changes in the master branch that touch a ‘txt’ file.</p>
+<p>It is common that the members of a project team watch their own projects and then pick the changes that are interesting to them for review.</p>
+<p>Project owners may also configure notifications on project-level.</p>
+<p>Adding Reviewers<br>In the change screen reviewers can be added explicitly to a change. The added reviewer will then be notified by email about the review request.</p>
+<p>Mainly this functionality is used to request the review of specific person who is known to be an expert in the modified code or who is a stakeholder of the implemented feature. Normally it is not needed to explicitly add reviewers on every change, but you rather rely on the project team to watch their project and to process the incoming changes by importance, interest, time etc.</p>
+<p>There are also plugins which can add reviewers automatically (e.g. by configuration or based on git blame annotations). If this functionality is required it should be discussed with the project owners and the Gerrit administrators.</p>
+<p>Dashboards<br>Gerrit supports a wide range of query operators to search for changes by different criteria, e.g. by status, change owner, votes etc.</p>
+<p>The page that shows the results of a change query has the change query contained in its URL. This means you can bookmark this URL in your browser to save the change query. This way it can be easily re-executed later.</p>
+<p>Several change queries can be also combined into a dashboard. A dashboard is a screen in Gerrit that presents the results of several change queries in different sections, each section having a descriptive title.</p>
+<p>A default dashboard is available under My &gt; Changes. It has sections to list outgoing reviews, incoming reviews and recently closed changes.</p>
+<p>Users can also define custom dashboards. Dashboards can be bookmarked in a browser so that they can be re-executed later.</p>
+<p>It is also possible to customize the My menu and add menu entries for custom queries or dashboards to it.</p>
+<p>Dashboards are very useful to define own views on changes, e.g. you can have different dashboards for own contributions, for doing reviews or for different sets of projects.</p>
+<p>NOTE<br>You can use the limit and age query operators to limit the result set in a dashboard section. Clicking on the section title executes the change query without the limit and age operator so that you can inspect the full result set.<br>Project owners can also define shared dashboards on project-level. The project dashboards can be seen in the web UI under Projects &gt; List &gt; <project-name> &gt; Dashboards.</p>
+<p>Submit a Change<br>Submitting a change means that the code modifications of the current patch set are applied to the target branch. Submit requires the Submit access right and is done on the change screen by clicking on the Submit button.</p>
+<p>In order to be submittable changes must first be approved by voting on the review labels. By default a change can only be submitted if it has a vote with the highest value on each review label and no vote with the lowest value (veto vote). Projects can configure custom labels and custom submit rules to control when a change becomes submittable.</p>
+<p>How the code modification is applied to the target branch when a change is submitted is controlled by the submit type which can be configured on project-level.</p>
+<p>Submitting a change may fail with conflicts. In this case you need to rebase the change locally, resolve the conflicts and upload the commit with the conflict resolution as new patch set.</p>
+<p>If a change cannot be merged due to path conflicts this is highlighted on the change screen by a bold red Cannot Merge label.</p>
+<p>Rebase a Change<br>While a change is in review the HEAD of the target branch can evolve. In this case the change can be rebased onto the new HEAD of the target branch. When there are no conflicts the rebase can be done directly from the change screen, otherwise it must be done locally.</p>
+<p>Rebase a Change locally<br>  // update the remote tracking branches<br>  $ git fetch</p>
+<p>  // fetch and checkout the change<br>  // (checkout command copied from change screen)<br>  $ git fetch <a href="https://gerrithost/myProject" target="_blank" rel="noopener">https://gerrithost/myProject</a> refs/changes/74/67374/2 &amp;&amp; git checkout FETCH_HEAD</p>
+<p>  // do the rebase<br>  $ git rebase origin/master</p>
+<p>  // resolve conflicts if needed and stage the conflict resolution<br>  …<br>  $ git add <path-of-file-with-conflicts-resolved></p>
+<p>  // continue the rebase<br>  $ git rebase –continue</p>
+<p>  // push the commit with the conflict resolution as new patch set<br>  $ git push origin HEAD:refs/for/master<br>Doing a manual rebase is only necessary when there are conflicts that cannot be resolved by Gerrit. If manual conflict resolution is needed also depends on the submit type that is configured for the project.</p>
+<p>Generally changes shouldn’t be rebased without reason as it increases the number of patch sets and creates noise with notifications. However if a change is in review for a long time it may make sense to rebase it from time to time, so that reviewers can see the delta against the current HEAD of the target branch. It also shows that there is still an interest in this change.</p>
+<p>NOTE<br>Never rebase commits that are already part of a central branch.<br>Abandon/Restore a Change<br>Sometimes during code review a change is found to be bad and it should be given up. In this case the change can be abandoned so that it doesn’t appear in list of open changes anymore.</p>
+<p>Abandoned changes can be restored if later they are needed again.</p>
+<p>Using Topics<br>Changes can be grouped by topics. This is useful because it allows you to easily find related changes by using the topic search operator. Also on the change screen changes with the same topic are displayed so that you can easily navigate between them.</p>
+<p>Often changes that together implement a feature or a user story are group by a topic.</p>
+<p>Assigning a topic to a change can be done in the change screen.</p>
+<p>It is also possible to set a topic on push, either by appending %topic=…​ to the ref name or through the use of the command line flag –push-option, aliased to -o, followed by topic=…​.</p>
+<p>Gerrit may be configured to submit all changes in a topic together with a single click, even when topics span multiple projects.</p>
+<p>Set Topic on Push<br>  $ git push origin HEAD:refs/for/master%topic=multi-master</p>
+<p>  // this is the same as:<br>  $ git push origin HEAD:refs/heads/master -o topic=multi-master<br>Using Hashtags<br>Hashtags are freeform strings associated with a change, like on social media platforms. In Gerrit, you explicitly associate hashtags with changes using a dedicated area of the UI; they are not parsed from commit messages or comments.</p>
+<p>Similar to topics, hashtags can be used to group related changes together, and to search using the hashtag: operator. Unlike topics, a change can have multiple hashtags, and they are only used for informational grouping; changes with the same hashtags are not necessarily submitted together.</p>
+<p>The hashtag feature is only available when running under NoteDb.</p>
+<p>Set Hashtag on Push<br>  $ git push origin HEAD:refs/for/master%t=stable-bugfix</p>
+<p>  // this is the same as:<br>  $ git push origin HEAD:refs/heads/master -o t=stable-bugfix<br>Work-in-Progress Changes<br>Work-in-Progress (WIP) changes are visible to anyone, but do not notify or require an action from a reviewer.</p>
+<p>Specifically, when you mark a change as Work-in-Progress:</p>
+<p>Reviewers are not notified for most operations, such as adding or removing, posting comments, and so on. See the REST API documentation tables for more information.</p>
+<p>The change does not show in reviewers’ dashboards.</p>
+<p>WIP changes are useful when:</p>
+<p>You have implemented only part of a change, but want to push your change to the server to run tests or perform other actions before requesting reviewer feedback.</p>
+<p>During a review, you realize you need to rework your change, and you want to stop notifying reviewers of the change until you finish your update.</p>
+<p>To set the status of a change to Work-in-Progress, you can use either the command line or the user interface. To use the command line, append %wip to your push request.</p>
+<p>  $ git push origin HEAD:refs/for/master%wip<br>Alternatively, click WIP from the More menu on the Change screen. The Change screen updates with a yellow header, indicating that the change is in a Work-in-Progress state.</p>
+<p>To mark the change as ready for review, append %ready to your push request.</p>
+<p>  $ git push origin HEAD:refs/for/master%ready<br>Alternatively, click Start Review from the Change screen.</p>
+<p>Change owners, project owners, site administrators and members of a group that was granted “Toggle Work In Progress state” permission can mark changes as work-in-progress and ready.</p>
+<p>Private Changes<br>Private changes are changes that are only visible to their owners, reviewers and users with the View Private Changes global capability. Private changes are useful in a number of cases:</p>
+<p>You want a set of collaborators to review the change before formal review starts. By creating a Private change and adding only a selected few as reviewers you can control who can see the change and get a first opinion before opening up for all reviewers.</p>
+<p>You want to check what the change looks like before formal review starts. By marking the change private without reviewers, nobody can prematurely comment on your changes.</p>
+<p>You want to use Gerrit to sync data between different devices. By creating a private throwaway change without reviewers, you can push from one device, and fetch to another device.</p>
+<p>Do not use private changes for making security fixes (see pitfalls below). How to make security fixes is explained below.</p>
+<p>To create a private change, you push it with the private option.</p>
+<p>Push a private change<br>  $ git commit<br>  $ git push origin HEAD:refs/for/master%private<br>The change will remain private on subsequent pushes until you specify the remove-private option. Alternatively, the web UI provides buttons to mark a change private and non-private again.</p>
+<p>When pushing a private change with a commit that is authored by another user, the other user will not be automatically added as a reviewer and must be explicitly added.</p>
+<p>For CI systems that must verify private changes, a special permission can be granted (View Private Changes). In that case, care should be taken to prevent the CI system from exposing secret details.</p>
+<p>Pitfalls ===</p>
+<p>If private changes are used, be aware of the following pitfalls:</p>
+<p>If a private change gets merged the corresponding commit gets visible for all users that can access the target branch and the private flag from the change is automatically removed. This makes private changes a bad choice for security fixes, as the security fix will be accessible as soon as the change was merged, but for security issues you want to keep an embargo until new releases have been made available.</p>
+<p>If you push a non-private change on top of a private change the commit of the private change gets implicitly visible through the parent relationship of the follow-up change.</p>
+<p>If you have a series of private changes and share one with reviewers, the reviewers can also see the commits of the predecessor private changes through the commit parent relationship.</p>
+<p>Ignoring Or Marking Changes As ‘Reviewed’<br>Changes can be ignored, which means they will not appear in the ‘Incoming Reviews’ dashboard and any related email notifications will be suppressed. This can be useful when you are added as a reviewer to a change on which you do not actively participate in the review, but do not want to completely remove yourself.</p>
+<p>Alternatively, rather than completely ignoring the change, it can be marked as ‘Reviewed’. Marking a change as ‘Reviewed’ means it will not be highlighted in the dashboard, until a new patch set is uploaded.</p>
+<p>Inline Edit<br>It is possible to edit changes inline directly in the web UI. This is useful to make small corrections immediately and publish them as a new patch set.</p>
+<p>It is also possible to create new changes inline.</p>
+<p>Project Administration<br>Every project has a project owner that administrates the project. Project administration includes the configuration of the project access rights, but project owners have many more possibilities to customize the workflows for a project which are described in the project owner guide.</p>
+<p>Working without Code Review<br>Doing code reviews with Gerrit is optional and you can use Gerrit without code review as a pure Git server.</p>
+<p>Push with bypassing Code Review<br>  $ git commit<br>  $ git push origin HEAD:master</p>
+<p>  // this is the same as:<br>  $ git commit<br>  $ git push origin HEAD:refs/heads/master<br>NOTE<br>Bypassing code review must be enabled in the project access rights. The project owner must allow it by assigning the Push access right on the target branch (refs/heads/<branch-name>).<br>NOTE<br>If you bypass code review you always need to merge/rebase manually if the tip of the destination branch has moved. Please keep this in mind if you choose to not work with code review because you think it’s easier to avoid the additional complexity of the review workflow; it might actually not be easier.<br>NOTE<br>The project owner may enable auto-merge on push to benefit from the automatic merge/rebase on server side while pushing directly into the repository.<br>User Refs<br>User configuration data such as preferences is stored in the All-Users project under a per-user ref. The user’s ref is based on the user’s account id which is an integer. The user refs are sharded by the last two digits (nn) in the refname, leading to refs of the format refs/users/nn/accountid.</p>
+<p>Preferences<br>There are several options to control the rendering in the Gerrit web UI. Users can configure their preferences under Settings &gt; Preferences. The user’s preferences are stored in a git config style file named preferences.config under the user’s ref in the All-Users project.</p>
+<p>The following preferences can be configured:</p>
+<p>Maximum Page Size:</p>
+<p>The maximum number of entries that are shown on one page, e.g. used when paging through changes, projects, branches or groups.</p>
+<p>Date/Time Format:</p>
+<p>The format that should be used to render dates and timestamps.</p>
+<p>Email Notifications:</p>
+<p>This setting controls the email notifications.</p>
+<p>Enabled:</p>
+<p>Email notifications are enabled.</p>
+<p>Every comment:</p>
+<p>Email notifications are enabled and you get notified by email as CC on comments that you write yourself.</p>
+<p>Disabled:</p>
+<p>Email notifications are disabled.</p>
+<p>Email Format:</p>
+<p>This setting controls the email format Gerrit sends. Note that this setting has no effect if the administrator has disabled HTML emails for the Gerrit instance.</p>
+<p>Plaintext Only:</p>
+<p>Email notifications contain only plaintext content.</p>
+<p>HTML and Plaintext:</p>
+<p>Email notifications contain both HTML and plaintext content.</p>
+<p>Default Base For Merges:</p>
+<p>This setting controls which base should be pre-selected in the Diff Against drop-down list when the change screen is opened for a merge commit.</p>
+<p>Auto Merge:</p>
+<p>Pre-selects Auto Merge in the Diff Against drop-down list when the change screen is opened for a merge commit.</p>
+<p>First Parent:</p>
+<p>Pre-selects Parent 1 in the Diff Against drop-down list when the change screen is opened for a merge commit.</p>
+<p>Diff View:</p>
+<p>Whether the Side-by-Side diff view or the Unified diff view should be shown when clicking on a file path in the change screen.</p>
+<p>Show Site Header / Footer:</p>
+<p>Whether the site header and footer should be shown.</p>
+<p>Show Relative Dates In Changes Table:</p>
+<p>Whether timestamps in change lists and dashboards should be shown as relative timestamps, e.g. ‘12 days ago’ instead of absolute timestamps such as ‘Apr 15’.</p>
+<p>Show Change Sizes As Colored Bars:</p>
+<p>Whether change sizes should be visualized as colored bars. If disabled the numbers of added and deleted lines are shown as text, e.g. ‘+297, -63’.</p>
+<p>Show Change Number In Changes Table:</p>
+<p>Whether in change lists and dashboards an ID column with the numeric change IDs should be shown.</p>
+<p>Mute Common Path Prefixes In File List:</p>
+<p>Whether common path prefixes in the file list on the change screen should be grayed out.</p>
+<p>Insert Signed-off-by Footer For Inline Edit Changes:</p>
+<p>Whether a Signed-off-by footer should be automatically inserted into changes that are created from the web UI (e.g. by the Create Change and Edit Config buttons on the project screen, and the Follow-Up button on the change screen).</p>
+<p>Publish comments on push:</p>
+<p>Whether to publish any outstanding draft comments by default when pushing updates to open changes. This preference just sets the default; the behavior can still be overridden using a push option.</p>
+<p>Use Flash Clipboard Widget:</p>
+<p>Whether the Flash clipboard widget should be used. If enabled and the Flash plugin is available, Gerrit offers a copy-to-clipboard icon next to IDs and commands that need to be copied frequently, such as the Change-Ids, commit IDs and download commands. Note that this option is only shown if the Flash plugin is available and the JavaScript Clipboard API is unavailable.</p>
+<p>Set new changes work-in-progress:</p>
+<p>Whether new changes are uploaded as work-in-progress per default. This preference just sets the default; the behavior can still be overridden using a push option.</p>
+<p>In addition it is possible to customize the menu entries of the My menu. This can be used to make the navigation to frequently used screens, e.g. configured dashboards, quick.</p>
+<p>Reply by Email<br>Gerrit sends out email notifications to users and supports parsing back replies on some of them (when configured).</p>
+<p>Gerrit supports replies on these notification emails:</p>
+<p>Notifications about new comments</p>
+<p>Notifications about new labels that were applied or removed</p>
+<p>While Gerrit supports a wide range of email clients, the following ones have been tested and are known to work:</p>
+<p>Gmail</p>
+<p>Gmail Mobile</p>
+<p>Gerrit supports parsing back all comment types that can be applied to a change via the WebUI:</p>
+<p>Change messages</p>
+<p>Inline comments</p>
+<p>File comments</p>
+<p>Please note that comments can only be sent in reply to a comment in the original notification email, while the change message is independent of those.</p>
+<p>Gerrit supports parsing a user’s reply from both HTML and plaintext. Please note that some email clients extract the text from the HTML email they have received and send this back as a quoted reply if you have set the client to plaintext mode. In this case, Gerrit only supports parsing a change message. To work around this issue, consider setting a User Preference to receive only plaintext emails.</p>
+<p>Example notification:</p>
+<p>Some User has posted comments on this change.<br>(<a href="https://gerrit-review.googlesource.com/123123" target="_blank" rel="noopener">https://gerrit-review.googlesource.com/123123</a> )</p>
+<p>Change subject: My new change<br>…………………………………………………………….</p>
+<p>Patch Set 3:</p>
+<p>Just a couple of smaller things I found.</p>
+<p><a href="https://gerrit-review.googlesource.com/#/c/123123/3/MyFile.java" target="_blank" rel="noopener">https://gerrit-review.googlesource.com/#/c/123123/3/MyFile.java</a><br>File<br>MyFile.java:</p>
+<p><a href="https://gerrit-review.googlesource.com/#/c/123123/3/MyFile@420" target="_blank" rel="noopener">https://gerrit-review.googlesource.com/#/c/123123/3/MyFile@420</a><br>PS3, Line 420:     someMethodCall(param);<br>Seems to be failing the tests.</p>
+<p>–<br>To view, visit <a href="https://gerrit-review.googlesource.com/123123" target="_blank" rel="noopener">https://gerrit-review.googlesource.com/123123</a><br>To unsubscribe, visit <a href="https://gerrit-review.googlesource.com/settings" target="_blank" rel="noopener">https://gerrit-review.googlesource.com/settings</a></p>
+<p>(Footers omitted for brevity, must be included in all emails)<br>Example response from the user:</p>
+<p>Thanks, I’ll fix it.</p>
+<blockquote>
+<p>Some User has posted comments on this change.<br>(<a href="https://gerrit-review.googlesource.com/123123" target="_blank" rel="noopener">https://gerrit-review.googlesource.com/123123</a> )</p>
+<p>Change subject: My new change<br>…………………………………………………………….</p>
+<p>Patch Set 3:</p>
+<p>Just a couple of smaller things I found.</p>
+<p><a href="https://gerrit-review.googlesource.com/#/c/123123/3/MyFile.java" target="_blank" rel="noopener">https://gerrit-review.googlesource.com/#/c/123123/3/MyFile.java</a><br>File<br>MyFile.java:<br>Rename this file to File.java</p>
+<p><a href="https://gerrit-review.googlesource.com/#/c/123123/3/MyFile@420" target="_blank" rel="noopener">https://gerrit-review.googlesource.com/#/c/123123/3/MyFile@420</a><br>PS3, Line 420:     someMethodCall(param);<br>Seems to be failing the tests.</p>
+</blockquote>
+<p>Yeah, I see why, let me try again.</p>
+<blockquote>
+<p>–<br>To view, visit <a href="https://gerrit-review.googlesource.com/123123" target="_blank" rel="noopener">https://gerrit-review.googlesource.com/123123</a><br>To unsubscribe, visit <a href="https://gerrit-review.googlesource.com/settings" target="_blank" rel="noopener">https://gerrit-review.googlesource.com/settings</a></p>
+<p>(Footers omitted for brevity, must be included in all emails)<br>In this case, Gerrit will persist a change message (“Thanks, I’ll fix it.”), a file comment (“Rename this file to File.java”) as well as a reply to an inline comment (“Yeah, I see why, let me try again.”).</p>
+</blockquote>
+<p> — Security Fixes</p>
+<p>If a security vulnerability is discovered you normally want to have an embargo about it until fixed releases have been made available. This means you want to develop and review security fixes in private.</p>
+<p>If your repository is public or grants broad read access it is recommended to fix security issues in a copy of your repository which has very restricted read permissions (e.g. myproject-security-fixes). You can then implement, review and submit the security fix in this repository, make and publish a new release and only then integrate the security fix back into the normal (public) repository.</p>
+<p>Alternatively you can do the security fix in your normal repository in a branch with restricted read permissions. We don’t recommend this because there is a risk of configuring the access rights wrongly and unintentionally granting read access to the wrong people.</p>
+<p>Using private changes for security fixes is not recommended due to the pitfalls discussed above. Especially you don’t want the fix to become visible after submit and before you had a chance to make and publish a new release.</p>
+<p>Part of Gerrit Code Review</p>
+<p> Search<br>Version v3.1.2-859-ge39fc49fe3 | Privacy</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/rom/" rel="tag"># rom</a>
+              <a href="/tags/gerrit/" rel="tag"># gerrit</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2020/05/26/thought/how_to_read_a_book/" rel="prev" title="如何去阅读一本书">
+      <i class="fa fa-chevron-left"></i> 如何去阅读一本书
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2020/06/20/tcp-ip/tcping/" rel="next" title="TCPing 工具">
+      TCPing 工具 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Gerrit-文档"><span class="nav-number">1.</span> <span class="nav-text">Gerrit 文档</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#What-is-Gerrit"><span class="nav-number">1.1.</span> <span class="nav-text">What is Gerrit?</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Tools"><span class="nav-number">1.2.</span> <span class="nav-text">Tools</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Sophimp"
+      src="/images/avatar.png">
+  <p class="site-author-name" itemprop="name">Sophimp</p>
+  <div class="site-description" itemprop="description">A dream begin</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">87</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+        <span class="site-state-item-count">20</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+        <span class="site-state-item-count">90</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/sophimp" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;sophimp" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:sophimp2020@126.com" title="E-Mail → mailto:sophimp2020@126.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Sophimp</span>
+</div>
+
+<!--
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a>
+  </div>
+-->
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="Total Visitors">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="Total Views">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

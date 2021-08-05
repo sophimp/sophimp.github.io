@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+  <link rel="stylesheet" href="/lib/pace/pace-theme-minimal.min.css">
+  <script src="/lib/pace/pace.min.js"></script>
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"sophimp.gitee.io","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="工作需要开始研究mokee, 老规矩，先制定一个计划。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="mokee 系统研究">
+<meta property="og:url" content="http://sophimp.gitee.io/2019/05/20/android/rom/mokee_research/index.html">
+<meta property="og:site_name" content="Sophimp&#39;s Space">
+<meta property="og:description" content="工作需要开始研究mokee, 老规矩，先制定一个计划。">
+<meta property="article:published_time" content="2019-05-20T10:23:40.000Z">
+<meta property="article:modified_time" content="2021-03-15T03:49:47.929Z">
+<meta property="article:author" content="Sophimp">
+<meta property="article:tag" content="ROM">
+<meta property="article:tag" content="Mokee">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="http://sophimp.gitee.io/2019/05/20/android/rom/mokee_research/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-Hans'
+  };
+</script>
+
+  <title>mokee 系统研究 | Sophimp's Space</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+	
+	<script type="text/javascript" src="//cdn.bootcss.com/canvas-nest.js/1.0.0/canvas-nest.min.js"></script>
+	
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Sophimp's Space</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">coding & thinking</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+  <a href="https://github.com/sophimp" class="github-corner" title="Follow me on GitHub" aria-label="Follow me on GitHub" rel="noopener" target="_blank"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
+    <link itemprop="mainEntityOfPage" href="http://sophimp.gitee.io/2019/05/20/android/rom/mokee_research/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.png">
+      <meta itemprop="name" content="Sophimp">
+      <meta itemprop="description" content="A dream begin">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Sophimp's Space">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          mokee 系统研究
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2019-05-20 18:23:40" itemprop="dateCreated datePublished" datetime="2019-05-20T18:23:40+08:00">2019-05-20</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2021-03-15 11:49:47" itemprop="dateModified" datetime="2021-03-15T11:49:47+08:00">2021-03-15</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Android/" itemprop="url" rel="index"><span itemprop="name">Android</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="Views" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">Views: </span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span>
+            <div class="post-description">工作需要开始研究mokee, 老规矩，先制定一个计划。</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="mokee-系统研究"><a href="#mokee-系统研究" class="headerlink" title="mokee 系统研究"></a>mokee 系统研究</h2><ol>
+<li>前情回顾</li>
+</ol>
+<p>公司任务, 需要研究系统级诱发, aosp 的编译已经没有问题了,  在ubuntu环境下, 按照步骤, 基本上没有意外问题. </p>
+<p>编译mokee 系统就遇到了不少问题:<br>    - 首先同步源代码问题, 稀里糊涂过了, 这里对default.xml 存在疑问, 换代理的方式为何与aosp 的不太一样呢? 对repo 管理存在疑问, 切换分支, 查看分支, 都是按照指令来做, 但是不清楚还有没有其他的方法呢?<br>    - 其次, 切换分支后, lunch 里的选择找不到 对应硬件驱动的 *.mk文件, 目前卡在这里<br>    - 选择已有的分支呢? 编译也会通不过, 编译出错的问题, 仍未解决.<br>    - 没有的机型如何去定制驱动呢? nubia z17minis, one plus 6t 官方都没有支持, 靠我自己可行吗?</p>
+<ol start="2">
+<li>接下来的方向</li>
+</ol>
+<p>先选择谷歌官方的, 看是否可以编译过, </p>
+<p>然后再去查找驱动哪里找? 为何有选项而下载不到驱动呢? 是对非开发人员作了限制吗? </p>
+<p>没有的机型如何定适配制驱动呢? 主要就是双卡相关的功能.</p>
+<p>直接将官方的驱动分解出来, 这也得要一定的时间, 首先要搞清楚整个工程架构, 至少与研究相关的模块. 那么多文件.  工作量是不小的.</p>
+<p>手写驱动: 短时间内是难以搞定的了.</p>
+<h2 id="任务列表"><a href="#任务列表" class="headerlink" title="任务列表"></a>任务列表</h2><ol>
+<li><p>选择谷歌官方的, 看是否可以编译过, </p>
+<p> 切换到mko-mr1 分支, nexus 5x 可以编译过.</p>
+<p> 中间切换过几次mko-mr1-dev, mkp 的版本, lunch过几次不同的平台, 编译废掉了, 然后删除掉所有的文件, 重新同步, 可正常通过</p>
+<pre><code>repo init -u https://github.com/Mokee/android -b mko-mr1
+repo sync
+lunch bullhead
+mka bacon</code></pre></li>
+<li><p>对比工程文件夹的异同</p>
+<p> 具体比较移致 <a href="mokee_aosp_directory_analysis.md">Mokee与aosp工程分件夹的分析</a></p>
+<p> 基本上了解了各个文件夹的作用, 但是对于定制适配 mokee 还是无从下手.</p>
+<p> <code>source build/envsetup.sh</code><br> lunch n595j-userdebug, 在 <code>build/core/product_config.mk</code> :238 行报错</p>
+<p> 看来只能从 <code>envsetup.sh</code> 入手看看做了哪些事, lunch 又是从哪里来的<br> 搞明白 <code>Android.mk</code> 语法, 看看238行为何报错<br> 搞明白 Makefile 语法, 看看整个工程从哪里开始编译, 哪里是入口</p>
+</li>
+<li><p>下载了pixel3 sargo 的驱动</p>
+<p> <code>extract-google_devices-sargo.sh</code> 和 <code>extract-qcom-sargo.sh</code></p>
+<p> <a href="extract_google_devices_qcom_sargo_analysis.md">谷歌内核驱动脚本做了什么</a></p>
+<p> <code>source build/envsetup.sh</code></p>
+<p> <a href="envsetup_analysis.md">envsetup 又做了什么</a></p>
+<p> evesetup 主要是提供一些临时命令, 用于编译, 查看源码, 配置环境, 快速跳转<br> 所以接下来makefile 才是关键, shell 的学习, 暂时先放一放, 能看明白代码就行, 忘掉的语法再补上</p>
+</li>
+</ol>
+<ul>
+<li><p>Android.mk 语法, Makefile语法</p>
+<p>  就以<code>product_config.sh</code> 和 aosp 的 make文件为例, 开始学习 makefile</p>
+</li>
+<li><p>适配一款机型要做的工作</p>
+<p>  参考资料:</p>
+<p>  <a href="https://toby.moe/android-shim/" target="_blank" rel="noopener">shim和blob</a><br>  <a href="https://bbs.mokeedev.com/t/topic/1073/33" target="_blank" rel="noopener">mokee适配一款机型我们做了什么</a><br>  <a href="https://fat-tire.github.io/porting-intro.html" target="_blank" rel="noopener">How to port CyanogenMode/LineageOS android to your own device</a><br>  <a href="https://source.android.google.cn/setup/develop/new-device" target="_blank" rel="noopener">添加一款新的机型 官方教程</a><br>  <a href="https://kotlintc.com/articles/4343?fr=sidebar" target="_blank" rel="noopener">编译一款新机型记录</a><br>  <a href="https://www.xda-developers.com/in-depth-capitulation-of-why-msm8974-devices-are-excluded-from-nougat/" target="_blank" rel="noopener">为何msm8974不能运行Nougat</a><br>  <a href="https://www.xda-developers.com/cameras-custom-roms-developers-make-hardware-work-without-source-code/" target="_blank" rel="noopener">如何在没有源码的情况下让硬件工作</a></p>
+<p>  看出了点头绪, 在mokee上说的, 先就是下载内核, 然后就是编写device库, 然后编译, 烧写手机, 看日志修改</p>
+<p>  根据编译流程的命令, 分析完envsetup, 看完lunch 函数, lunch 就是根据vendorsetup来添加combo, 然后准备好环境, 那么就进行下一步, mka bacon, 这一步调用的是 m() 函数, 而m()函数的入口就是 build/soong/<code>soong_ui.bash</code><br>  soong 才是整个系统的编译框架, 因此浏览了一下整个build下的文件, kali, blueprint, soong, go, ninja, <code>roomservice.py</code><br>  roomservice算是一个突破, 突然想起来了选择 combo 的时候,提示错误里就有roomservice 的错误, 这里<project>是github的仓库, 所以在Mokee的仓库下搜索一下, 发现是有msm8976的库, kernel, vendor, devices 都包括, 而且明确支持 z17 mini, z17 lite, z17minis的, 这样一来, 甜酸z17minis的难度一下子就小了很多, 接下来是如何指令下载呢? 要分析 <code>buildconfig.mk</code> 238 行了</p>
+<p>  下载一个已有的, 先根据combo 名称来查找Mokee库下载devices库, 这一步如果手动下载呢? 然后解析devices库的依赖, 再下载kernel库, packages-resource库, vendor库</p>
+<p>  <code>入口还是从lunch函数开始, combo添加不是必须的, 可以直接lunch combo, 然后会从本地device库中查找, 解析.dependencies 添加到./repo/local_manifests/roomservice.xml</code> 中, 然后自行下载</p>
+<p>  所以, 下一步是要读懂, lunch函数是怎么解析本地的文件夹查找的.</p>
+<ul>
+<li><p>当一个aosp新版本发布时, 背后都发生了什么? </p>
+<p>  upstream update: 谷歌内部的更新, 只支持有限的机型, 接着OEM 设备商将开始一系列更新, 制造设备, 向芯片商购买SoC<br>  Chipset Makeer: BSP 包括驱动和HALs, 是保密的, BSP 包括必须的代码让OEMs为自己的设备编译Android和必要的驱动, OEM根据芯片商的能力, 再加上谷歌提供的接口, 就可以应用新的能力, 一旦更新后, 虽然是同一样接口, 但是控制的能力不同, 但是旧的芯片没有这个能力, 所以就出问题了. </p>
+<p><code>cm.mk, device_code.mk 都要手动编写吗? extract_files.sh, setup-makefiles.sh</code>这几个也是关键,<br>联系lunch 与机型的配置是 mk_product_device变量?<br>recovery.fstab, 与/etc/fstab 的作用是一样的, 用于配置设备挂载的<br>GPIO, 想得那么清晰的方法, 到自己实施又是另一番景象, 节点完全可以抽象成一个关键词, 然后再概括这个关键词</p>
+</li>
+</ul>
+</li>
+<li><p>repo 工具</p>
+<p>  repo command options<br>  repo help<br>  repo help command</p>
+<p>  repo 不仅仅是工具的使用, 还需研究一下.repo下的配置, git 的高级用法<br>  从github上下载库, 自动配置到 <code>local_manifests/roomservice.xml</code> 中应该也是在repo 下的配置里</p>
+</li>
+<li><p>如何将下载下来的msm8976 kernel, devices, vendor 与combo nx589j 联系起来</p>
+<p>  <a href="./lunch_function_analysis.md">lunch 函数分析</a></p>
+<p>  api.github.com/search, 学习一下github 的RESTful search 接口调用, 那们上传之后, 还要自行维护api 还是github 自动生成</p>
+<p>  lunch 命令, 查找不到 combo 对应的库时, 就从roomservice.py 下载, roomservice.py 下载是使用github api 来实现的, 这里也可以修改下载的路径到自己的仓库. </p>
+<p>  roomservice.py 只负责下载相关的库, 这个过程也可以手动下载, 配置<code>.repo/local_manifests/roomservice.xml</code> 然后直接 repo sync, 这里有一个revision 不对应的问题, 还未搞明白, 应该是mk 文件中检查combo 与当前的版本适配问题吧. </p>
+<p>  然后直接可以lunch combo, 这里面如何衔接的流程, 还比较模糊. 编译完nx569j 仔细研究, 适配一套nx589j 练手</p>
+</li>
+<li><p>刷机脚本的研究</p>
+<ul>
+<li>机型的匹配, 直接修改刷机脚本, 可以将569的load直接刷到569上吗? 看着用的是同一种芯片. </li>
+<li>解压卡刷包, 在META里面的InstallScript, 倒时没有很复杂, 多了机型的验证, 给这个验证去掉, 应该是能刷进去, 但是不一定能启动. 然后就是备份的脚本, 不至于升级丢失了数据. </li>
+<li>他们在android 行业所谓的深耕, 跟我理解的深耕还是有一定的差距, 还是停留在表面上, 假如想转另一个平台, 之前所谓的深入大都没有了效果, 这大概也是我心里对各种技能深入的排斥心理吧, 但是工程能力和思想还是通用的.</li>
+</ul>
+</li>
+<li><p>移植nx589j</p>
+<ul>
+<li>下载已有的, 按照How to port 教程着重修改BoardConfig.mk, device.mk, kernel, mokee.mk, recovery.fstab, vendorsetup.sh</li>
+<li>这是一个不确定结果的行动</li>
+<li>init.rc: android init language, 启动脚本 </li>
+</ul>
+</li>
+<li><p>init.rc 语法</p>
+<p>  <a href="./init_rc_syntax.md">语法分析见</a></p>
+</li>
+<li><p>内核编译<br>  不同的手机厂商使用的内核是一样的吗?<br>  内核是开源, 内核的驱动层要做哪些功能呢?<br>  kernel-msm8976 几百万个文件, 是下载了源码吗? </p>
+</li>
+</ul>
+<ul>
+<li><p>上面的工作做完了, 对定制一款机型有思路吗? </p>
+<p>  找已有的类型系列的机型, 先按已适配的操作系统搞出一款可编译通过的版本, 再修改刷机配置文件 </p>
+<p>  继续参考 <a href="https://fat-tire.github.io/porting-intro.html#Prerequisites" target="_blank" rel="noopener">How to port CyanogenMod/LineageOs to your own devices</a></p>
+<p>  /proc/partitions信息: major, minor, blocks, name 是何信息<br>  /proc/devices 信息: 可查看当前挂载了哪些磁盘, 但是并不能计算出boot, system 要分区多少<br>  这个根据装系统分配磁盘是一样的逻辑吧, 可以多分一些, 根据手机存储来确定</p>
+<p>  packages/apps/Bluetooth/Android.mk: error: “Bluetooth (APPS android-arm) missing libbluetooth_jni (SHARED_LIBRARIES android-arm)”<br>Available variants:</p>
+<pre><code>libbluetooth_jni (SHARED_LIBRARIES android-arm64)</code></pre><p>You can set ALLOW_MISSING_DEPENDENCIES=true in your environment if this is intentional, but that may defer real problems until later in the build.</p>
+<p>  将packages/apps/Bluetooth/robottests/Android.mk 复制到packages/apps/Bluetooth/ 下</p>
+</li>
+</ul>
+<p>在编译过程中, 缺什么, 少什么, 有编译日志可看, 根据日志还有一些是因为多出来的文件, 同步的时候未能删除, 这个时候需要手动删除, 进入文件夹, 查看一下是否被git 跟踪 </p>
+<ul>
+<li><p>oneplus 6 与 6T 共用一套代码</p>
+<p>  从这里不是可以看出, 手机厂商的套路, 两种机型, 并没有多大差别</p>
+<p>  可以刷在oneplus 6T 上, 但是安装不了应用, 有几种可能的原因:</p>
+<ol>
+<li><p>调用了系统函数, 不让装</p>
+</li>
+<li><p>签名不合法</p>
+</li>
+<li><p>sdk 的api 不同, 得合入mokee sdk 28 </p>
+</li>
+<li><p>系统可以装一般应用, 为何就不能装系统应用?<br>使用adb 安装有这个错误,<br>Package com.android.safesms has no signatures that match those in shared user android.uid.phone;<br>可以确认是签名的问题, 编译系统与应用的签名不一致<br><a href="https://blog.csdn.net/hmg25/article/details/6447067" target="_blank" rel="noopener">Android权限之sharedUserId和签名</a><br><a href="https://www.cnblogs.com/vampirejt/p/4168120.html" target="_blank" rel="noopener">Android系统中权限和签名问题</a><br>那么如何修改系统编译使用哪一套签名? </p>
+<p>在 build/core/config 里搜索 local_certificate 修改 product_default_dev_certificate := build/target/product/security/platform<br>target_build_type 是变成了release</p>
+</li>
+</ol>
+</li>
+<li><p>关键是刷机后, 黑屏, 这个过程要靠什么来查看缺少什么呢?</p>
+</li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/ROM/" rel="tag"># ROM</a>
+              <a href="/tags/Mokee/" rel="tag"># Mokee</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2019/04/29/kotlin/kotlin_collections/" rel="prev" title="Kotlin 集合使用">
+      <i class="fa fa-chevron-left"></i> Kotlin 集合使用
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2019/05/22/android/rom/mokee_aosp_directory_analysis/" rel="next" title="Mokee 与 aosp 工程文件的分析">
+      Mokee 与 aosp 工程文件的分析 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#mokee-系统研究"><span class="nav-number">1.</span> <span class="nav-text">mokee 系统研究</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#任务列表"><span class="nav-number">2.</span> <span class="nav-text">任务列表</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Sophimp"
+      src="/images/avatar.png">
+  <p class="site-author-name" itemprop="name">Sophimp</p>
+  <div class="site-description" itemprop="description">A dream begin</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">87</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+        <span class="site-state-item-count">20</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+        <span class="site-state-item-count">90</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/sophimp" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;sophimp" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:sophimp2020@126.com" title="E-Mail → mailto:sophimp2020@126.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Sophimp</span>
+</div>
+
+<!--
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a>
+  </div>
+-->
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="Total Visitors">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="Total Views">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

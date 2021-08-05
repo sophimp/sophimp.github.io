@@ -1,0 +1,676 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+  <link rel="stylesheet" href="/lib/pace/pace-theme-minimal.min.css">
+  <script src="/lib/pace/pace.min.js"></script>
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"sophimp.gitee.io","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="此教程有一定的参考性， 相对于一个新手来说, 不够全面，这与每个人的知识积累有关, 但ROM移植的教程本来就少，权且看之。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="(译)如何移植 CyanogenOS&#x2F;LineageOS 到您自己的手机">
+<meta property="og:url" content="http://sophimp.gitee.io/2019/08/02/android/rom/Port_Android_To_Your_Device_translate/index.html">
+<meta property="og:site_name" content="Sophimp&#39;s Space">
+<meta property="og:description" content="此教程有一定的参考性， 相对于一个新手来说, 不够全面，这与每个人的知识积累有关, 但ROM移植的教程本来就少，权且看之。">
+<meta property="article:published_time" content="2019-08-02T10:31:29.000Z">
+<meta property="article:modified_time" content="2021-03-15T03:49:47.927Z">
+<meta property="article:author" content="Sophimp">
+<meta property="article:tag" content="ROM移植">
+<meta property="article:tag" content="LineageOS">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="http://sophimp.gitee.io/2019/08/02/android/rom/Port_Android_To_Your_Device_translate/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-Hans'
+  };
+</script>
+
+  <title>(译)如何移植 CyanogenOS/LineageOS 到您自己的手机 | Sophimp's Space</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+	
+	<script type="text/javascript" src="//cdn.bootcss.com/canvas-nest.js/1.0.0/canvas-nest.min.js"></script>
+	
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Sophimp's Space</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">coding & thinking</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+  <a href="https://github.com/sophimp" class="github-corner" title="Follow me on GitHub" aria-label="Follow me on GitHub" rel="noopener" target="_blank"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
+    <link itemprop="mainEntityOfPage" href="http://sophimp.gitee.io/2019/08/02/android/rom/Port_Android_To_Your_Device_translate/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.png">
+      <meta itemprop="name" content="Sophimp">
+      <meta itemprop="description" content="A dream begin">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Sophimp's Space">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          (译)如何移植 CyanogenOS/LineageOS 到您自己的手机
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2019-08-02 18:31:29" itemprop="dateCreated datePublished" datetime="2019-08-02T18:31:29+08:00">2019-08-02</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2021-03-15 11:49:47" itemprop="dateModified" datetime="2021-03-15T11:49:47+08:00">2021-03-15</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Android/" itemprop="url" rel="index"><span itemprop="name">Android</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="Views" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">Views: </span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span>
+            <div class="post-description">此教程有一定的参考性， 相对于一个新手来说, 不够全面，这与每个人的知识积累有关, 但ROM移植的教程本来就少，权且看之。</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>原文见 <a href="https://fat-tire.github.io/porting-intro.html#Prerequisites" target="_blank" rel="noopener">How To Port Cyanogen/LineageOS Android To Your Own Device</a></p>
+<h3 id="1-移植过程的一些提示"><a href="#1-移植过程的一些提示" class="headerlink" title="1. 移植过程的一些提示"></a>1. 移植过程的一些提示</h3><p>显然您可能会遇到手机或平板电脑或任何其他设备尚未提供CyanogenMod的产品。</p>
+<p>你之前已经在计算机上为其他设备构建了CyanogenMod，并且您对此过程感到满意。实际上，您仍然可以获得源代码并准备好处理一个大项目。</p>
+<p>看起来这是你发光的机会！</p>
+<pre><code>注意:
+
+出于本教程的目的，所有目录的路径引用都是相对于源码的根止录（即您执行repo init的位置），并且文件夹名称也相对于那里。
+如果你按照构建指南查看到此篇文章，源代码的根目录在 〜/android/system</code></pre><h3 id="2-先决条件"><a href="#2-先决条件" class="headerlink" title="2. 先决条件"></a>2. 先决条件</h3><p>将CyanogenMod移植到新设备可能非常简单或非常困难，具体取决于设备本身，是否目前运行最新版本的Android，当然还有作为开发人员的技能。</p>
+<p>如果没有为之前的另一台设备构建过CyanogenMod（和recovery），那么移植将会非常困难。因此，如果你还编译过源码，请试一试<a href="https://fat-tire.github.io/" target="_blank" rel="noopener">build or two</a>。</p>
+<pre><code>提示:
+
+如果您通过CyanogenMod学习中心找到此页面以外的其他页面，请访问 [Development]() 以获取更多信息。</code></pre><p>此外，您应该熟悉CyanogenMod源代码。你应该期望，除了一些罕见的例外，你需要做的几乎所有事情都将在/device/[vendor]/[codename]，/vendor/[vendor]/[codename]和/kernel/[vendor]/[codename]目录。</p>
+<pre><code>提示:
+
+有关CyanogenMod源文件夹中的位置的更详细概述，请参见[此处]()。事实上，如果你打算做移植，你真的应该读这个。</code></pre><h3 id="3-收集手机的信息"><a href="#3-收集手机的信息" class="headerlink" title="3. 收集手机的信息"></a>3. 收集手机的信息</h3><p>在开始移植之前，您需要尽可能多地收集有关设备的信息。转到<a href="">维基百科</a>并确定产品名称，代码名称，体系结构，内存大小，内部存储大小和平台体系结构。将此信息放在一个文件中以便于检索。尽量了解该设备，包括它可能与其他设备有任何相似之处。</p>
+<pre><code>提示:
+
+许多设备在架构上与已经在市场上具有现有CM端口的其他设备类似。
+当新设备出现时，看看您是否可以查看它是否与其他设备相同，只是屏幕尺寸不同或内存较多或存在其他一些细微差别。
+如果您发现设备的同一系列的机型(上一款产品和同期产品)，可能已经为您完成了大部分工作！</code></pre><p>您需要的大部分信息都可以在线获取，但假设设备已经运行非CyanogenMod版Android系统，您也可以从设备本身获取一些信息。要查看包含此信息的文件，可能需要root设备。但是，有时您可以在线查找库存固件更新包，并可以从.zip存档文件中查看该文件。</p>
+<h4 id="3-1-查看当前手机的-system-build-prop"><a href="#3-1-查看当前手机的-system-build-prop" class="headerlink" title="3.1 查看当前手机的 /system/build.prop"></a>3.1 查看当前手机的 /system/build.prop</h4><p>假设设备已在运行Android系统，则设备上应该有一个文件/system/build.prop，其中可能包含有用的信息，这些信息将在您进行移植时发挥作用。此文件包含Android使用的各种参数和设置的定义。</p>
+<p>因此，如果您之前已在计算机上安装了adb，则可以使用以下命令将此文件提取到计算机：</p>
+<blockquote>
+<p>adb pull /system/build.prop</p>
+</blockquote>
+<p>如果您收到与权限相关的错误，则可能需要root设备才能访问此文件。但是，还有其他方法可以找到此文件。例如，它可以在线包含在任何库存固件“升级”包中。</p>
+<p>一旦你有了这个文件……</p>
+<pre><code>* 记下ro.product.manufacturer参数的值。这将是您的供应商名称。 [vendor]是设备制造商/供应商的名称。 CM已经为大多数主要供应商建立了命名约定，例如samsung，htc，lge等。请注意，在这些目录名称中，供应商始终是小写的，不包含空格。
+* 记下ro.product.device参数的值。这将是您的设备代号。 [codename]对应于设备本身的项目代码名称。这几乎与设备的销售名称完全不一致。如果您之前已经构建过CM（并且想更好地再次构建它！），那么您应该熟悉每个设备的代码名称的概念。如供应商名称，代号始终为小写且不包含空格。
+注意：
+
+有时，设备会在其他参数中识别，例如ro.product.board</code></pre><p>保持build.prop文件很方便，后续可随时供参考。</p>
+<h4 id="3-2-检查boot-img-recovery-img"><a href="#3-2-检查boot-img-recovery-img" class="headerlink" title="3.2 检查boot.img, recovery.img"></a>3.2 检查boot.img, recovery.img</h4><p>如上所述，在进行移植时，您可能希望使用您知道可用的现有预构建内核，而不是使用源代码重新构建一个内核。您可能需要从设备中提取此内核文件，具体取决于您的设备。内核可以作为单个文件存在（就像在许多OMAP设备上一样），也可以与ramdisk一起包装在引导或恢复分区中。</p>
+<p>同样，存储的ramdisk的内容可能非常有用，通常可以提取和审查。可能是设备需要来自存储的ramdisk的特定文件才能正常启动，加载模块等。在大多数情况下，您可以从设备本身查看ramdisk中的文件，但您可能更愿意查看完整目录。</p>
+<pre><code>注意：
+
+ramdisk是一小组文件和目录，与内核一起加载到内存中。然后内核运行ramdisk中的一个叫init的文件，然后运行一个脚本（init.rc，init。[codename] .rc等）加载Android的其余部分。 ramdisk和内核可以使用名称为mkbootimg，mkimage和其他方法的工具以多种不同方式打包在一起。</code></pre><p>您可以使用dd在根植的Android设备上经常提取boot和recovery映像（到名为boot.img和recovery.img的文件）。或者，如果您可以访问供应商提供的更新.zip文件，您通常可以在其中找到这些文件。</p>
+<h4 id="3-3-收集一切可使用的源代码"><a href="#3-3-收集一切可使用的源代码" class="headerlink" title="3.3 收集一切可使用的源代码"></a>3.3 收集一切可使用的源代码</h4><p>使用Android的任何设备的制造商或供应商至少需要根据请求为所有GPL组件提供源代码，包括（尤其）内核。您肯定需要保存一份内核源代码放在手边。</p>
+<h4 id="3-4-决定分区方案"><a href="#3-4-决定分区方案" class="headerlink" title="3.4 决定分区方案"></a>3.4 决定分区方案</h4><p>移动设备的主要长期存储部分 - 通常是“emmc”（embeded multimedia card嵌入式多媒体卡） - 非常类似于计算机硬盘驱动器以特定方式识别和隔离不同的数据区域。这些独特的区域称为分区，它们可以存储任何类型的数据。一些分区包含原始数据: 固件，内核，ramdisk等。通常，分区被格式化为使用内核将识别的特定文件系统，以便可以在那里读取和写入单个文件和目录。</p>
+<p>在用CyanogenMod替换已装的操作系统之前，确定设备的分区方案很重要。您构建的recovery.img需要此信息才能知道在哪里可以找到各种Android目录。特别是，您想知道将哪些分区分配给/system，/data，/cache 和 /sdcard。</p>
+<p>您想知道哪些分区存在，哪些设备，它们的安装方式以及分区的大小。此信息可能稍后传送到/ vendor目录中的BoardConfig.mk文件。</p>
+<p>如果幸运的话，可以在recovery.img文件中找到recovery.fstab文件，从而加快了确定哪些内容的过程。此外，ramdisk中的init.[codename].rc文件可能包含该信息。查找安装分区顶部附近的线条。</p>
+<p>另外，命令：</p>
+<blockquote>
+<p>$ cat /proc/partitions</p>
+</blockquote>
+<p>从正在运行的设备也可以帮助您识别分区。另请参阅/proc/emmc，/proc/mounts 或/proc/mtd。您还可以从命令mount获取一些信息（以root身份运行）。</p>
+<p>还要检查/cache/recovery.log或/tmp/recovery.log。</p>
+<p>最后，如果您有bootloader的源代码（例如许多基于OMAP的设备使用的u-boot），您也可能会在那里找到相关信息。</p>
+<pre><code>注意：
+
+请注意，在某些极少数情况下，例如HP Touchpad，会使用抽象的虚拟文件系统。</code></pre><h3 id="4-创建三个文件目录"><a href="#4-创建三个文件目录" class="headerlink" title="4. 创建三个文件目录"></a>4. 创建三个文件目录</h3><p>现在您已经收集了有关设备的信息，现在可以为您的设备配置生成文件夹，这些文件夹位于以下目录中(相对于源码目录)。</p>
+<ul>
+<li><p>device/[vendor]/[codename]/  – 这是特定于您的设备的安装文件所在的位置。device/目录包含99-100％的配置设置和特定设备的其他代码。你需要很好地了解这个目录。如上所述，在启动此设备的文件夹时，最好为现有设备调整目录，该设备在体系结构上与您要移植的设备相似。例如，查找基于相同平台的设备。</p>
+</li>
+<li><p>vendor/[vendor]/[codename]/  – vendor/目录包含从原始设备备份的专有二进制“blob”（或由供应商提供，例如Google Nexus设备和某些TI图形blob）。</p>
+</li>
+<li><p>kernel/[vendor]/[codename]/  – 内核源码放在这里。当您第一次开始移植工作时，您可能希望通过使用预构建的内核（例如库存安装附带的内核）而不是从头构建内核来简化操作。其中的诀窍是从现有系统中提取出内核文件，然后将其与新的ramdisk一起重新打包到您的设备可以使用的表单中。这可能因设备而异，因此查看使用类似架构的类似设备可能会有所帮助。从源代码构建内核对于每个设备都不是绝对必要的，但是在开源的精神下，它是CyanogenMod的首选实践。有关CyanogenMod如何从头开始构建内核源代码的详细讨论，请参见此处。<br>生成这些目录至少有三种方法：</p>
+</li>
+</ul>
+<h4 id="4-1-方法一-使用-mkvendor-sh-生成文件结构"><a href="#4-1-方法一-使用-mkvendor-sh-生成文件结构" class="headerlink" title="4.1 方法一: 使用 mkvendor.sh 生成文件结构"></a>4.1 方法一: 使用 mkvendor.sh 生成文件结构</h4><pre><code>使用build/tools/device/中的mkvendor.sh脚本自动生成目录。
+注意：
+
+mkvendor脚本仅适用于使用标准boot.img文件的设备，使用标准的Android约定和标头。
+它不适用于偏离此标准的设备（Nook Color，Touchpad等）。</code></pre><p>此脚本接受三个参数：vendor，codename和boot.img文件。</p>
+<p>用法示例：</p>
+<blockquote>
+<p>$ ./build/tools/device/mkvendor.sh samsung i9300~ / Desktop / i9300boot.img</p>
+</blockquote>
+<p>在上面的示例中，samsung表示供应商，i9300表示代号，最后一个参数是boot.img文件的路径，该文件使用dd从引导分区中提取或由供应商在更新.zip中提供，如上所述。</p>
+<p>上面的命令应该在您的CyanogenMod源代码库结构中创建/device/samsung/i9300/文件夹。在文件夹中，文件为AndroidBoard.mk，AndroidProducts.mk，BoardConfig.mk，cm.mk，device_[codename].mk，kernel（二进制），recovery.fstab等。</p>
+<p>这不会构建内核/目录。当您准备构建内核时，您将需要稍后执行此操作。</p>
+<pre><code>注意：
+
+如果它返回消息“unpackbootimg not found。你的android构建环境是否已设置并且是否已构建主机工具？”
+请确保在设置开发人员环境期间运行以下命令：
+
+$ make -j4 otatools</code></pre><h4 id="4-2-方法二-fork一个同类机型的github仓库"><a href="#4-2-方法二-fork一个同类机型的github仓库" class="headerlink" title="4.2 方法二: fork一个同类机型的github仓库"></a>4.2 方法二: fork一个同类机型的github仓库</h4><p>如果您有一个GitHub帐户，您可能希望首先分配另一个类似设备，然后为您的设备重命名。有关如何命名存储库的讨论，请参阅有关设置github的部分。</p>
+<p>始终确保您符合您fork的任何存储库的许可。</p>
+<h4 id="4-3-方法三-手动创建所有的目录和文件"><a href="#4-3-方法三-手动创建所有的目录和文件" class="headerlink" title="4.3 方法三: 手动创建所有的目录和文件"></a>4.3 方法三: 手动创建所有的目录和文件</h4><p>您始终可以从空目录开始，然后手动开始创建文件。这是最不推荐的，也许是最繁琐的方法，但它可能是最有启发性的。您可以查看其他设备以获取所需文件的参考。</p>
+<h3 id="5-编写定制文件"><a href="#5-编写定制文件" class="headerlink" title="5. 编写定制文件"></a>5. 编写定制文件</h3><p>device/文件夹中有许多文件。我们将首先关注四个文件BoardConfig.mk，device_[codename].mk，cm.mk，recovery.fstab和内核，以便为您的设备恢复工作。</p>
+<pre><code>提示 -- 从恢复开始！
+
+第一个主要步骤是为您的设备获取工作 recovery.img，以便轻松测试后续update.zips，并在必要时进行备份。因此，接下来的几个步骤将更多地关注恢复工作，而不是让CM本身工作。一旦恢复建立并安全运行，您为此完成的工作将直接应用于CM部件。</code></pre><p>让我们检查这些文件：</p>
+<h4 id="5-1-BoardConfig-mk"><a href="#5-1-BoardConfig-mk" class="headerlink" title="5.1 BoardConfig.mk"></a>5.1 BoardConfig.mk</h4><p>此文件包含有关设备主板，CPU和其他硬件架构的重要架构和构建信息。获得此文件至关重要。</p>
+<p>要获得基本的恢复引导，需要在此文件中设置一些参数。</p>
+<p>必须在BoardConfig中正确设置以下参数才能编译工作恢复映像：</p>
+<p>TARGET_ARCH：这是设备的架构，它通常类似于arm或omap3。</p>
+<p>BOARD_KERNEL_CMDLINE：并非所有设备都传递启动参数，但是如果您的设备执行此操作，则必须正确填写以便成功启动。<br>    您可以在ramdisk.img中找到此信息。 （您可以在此处了解有关配置集成内核源代码的更多信息。）</p>
+<p>BOARD_KERNEL_PAGESIZE：库存boot.img的页面大小，必须正确设置才能启动。这个的典型值是2048和4096，这些信息可以从库存内核中提取。</p>
+<p>BOARD_BOOTIMAGE_PARTITION_SIZE：分配给内核映像分区的字节数。</p>
+<p>BOARD_RECOVERYIMAGE_PARTITION_SIZE：分配给恢复映像分区的字节数。</p>
+<p>BOARD_SYSTEMIMAGE_PARTITION_SIZE：分配给Android系统文件系统分区的字节数。</p>
+<p>BOARD_USERDATAIMAGE_PARTITION_SIZE：分配给Android数据文件系统分区的字节数。</p>
+<pre><code>注意：
+
+上述信息可以通过将/proc/partitions或/proc/mtd的大小乘以块大小（通常为1024）来获得。</code></pre><p>BOARD_HAS_NO_SELECT_BUTTON :(可选），如果您的设备需要使用其“电源”按钮确认恢复中的选择，请使用此选项。</p>
+<p>BOARD_FORCE_RAMDISK_ADDRESS/BOARD_MKBOOTIMG_ARGS :(可选），使用这些来强制ramdisk的特定地址。这通常需要在较大的分区上，<br>    以便在预期存在的位置正确加载ramdisk。该值可以从库存内核获得。前者从Android 4.2.x开始被弃用，后者现在将在4.2.x及更高版本中使用。</p>
+<h4 id="5-2-device-codename-mk"><a href="#5-2-device-codename-mk" class="headerlink" title="5.2 device_codename.mk"></a>5.2 device_codename.mk</h4><p>device_codename.mk makefile包含有关要构建的Android软件包以及在何处复制特定文件和软件包或在编译期间设置的特定属性的说明。</p>
+<p>此文件可用于在编译时将重要文件复制到ramdisk中。</p>
+<pre><code>* PRODUCT_COPY_FILES：用于在编译期间将文件复制到ramdisk中，该文件位于$ OUT/recovery/root。
+
+例：
+
+$（LOCAL_PATH/sbin/offmode_charging：recovery/root/sbin/offmode_charging\</code></pre><p>这会将文件offmode_charging二进制文件复制到ramdisk中的sbin文件夹中。</p>
+<pre><code>* PRODUCT_NAME / PRODUCT_DEVICE：用于设置代号的值。这是您使用Lunch加载的设备的名称。</code></pre><h4 id="5-3-kernel"><a href="#5-3-kernel" class="headerlink" title="5.3 kernel"></a>5.3 kernel</h4><p>这只是预构建的内核映像或您自己构建的用于引导设备的内核。内核的格式可以是zImage或uImage，具体取决于设备体系结构的要求。</p>
+<h4 id="5-4-cm-mk"><a href="#5-4-cm-mk" class="headerlink" title="5.4 cm.mk"></a>5.4 cm.mk</h4><p>您需要对此文件进行一些更改用来集成 lunch, brunch, 和 breakfast 命令，以便您的设备显示在列表中并正确构建。您还将设置一些变量（请参阅其他设备）以指示应使用的开机动画的大小，无论是平板电脑还是手机等。</p>
+<p>其中一些设置不仅用于构建恢复，但您现在也可以设置它们，因为一旦恢复完成并正常工作，此处的设置将非常重要。</p>
+<p>再次，看看你的类似设备，以了解这里的设置应该是什么。这很直观。</p>
+<h4 id="5-5-recovery-fstab"><a href="#5-5-recovery-fstab" class="headerlink" title="5.5 recovery.fstab"></a>5.5 recovery.fstab</h4><p>recovery.fstab为设备中的每个分区定义文件系统装入点，文件系统类型和块设备。它的工作方式与标准Linux操作系统中的/etc/fstab几乎完全相同。</p>
+<pre><code>例：
+
+/system        ext4    /dev/block/mmcblk0p32
+这将mmcblk0p32的块设备设置为/system 作为文件系统类型 ext4</code></pre><p>所有挂载点都应存在于此文件中，并且此信息的正确性至关重要，否则可能会发生非常糟糕的事情，例如 recovery flash 写入错误的位置。</p>
+<pre><code>注意：
+
+文件系统类型datamedia可用于内部sdcards以及将块设备设置为 /dev/null。</code></pre><h4 id="5-6-vendorsetup-sh"><a href="#5-6-vendorsetup-sh" class="headerlink" title="5.6 vendorsetup.sh"></a>5.6 vendorsetup.sh</h4><p>在运行setupenv.sh时调用vendorsetup.sh。它用于在lunch menu 中添加非标准 lunch combos。</p>
+<p>要将您的设备添加到 lunch menu：</p>
+<pre><code>add_lunch_combo cm_&lt;codename&gt;-userdebug</code></pre><h3 id="6-编译一个测试的-recovery-image"><a href="#6-编译一个测试的-recovery-image" class="headerlink" title="6. 编译一个测试的 recovery image"></a>6. 编译一个测试的 recovery image</h3><p>要仅构建 recovery，请按照常规构建设置lunch，然后输入命令 make recoveryimage</p>
+<p>如果发生错误（肯定会发生错误），请查看这些处理构建<a href="">错误的提示</a>。</p>
+<pre><code>提示:
+
+如果您有fastboot，则可以尝试将recovery.img安装到recovery分区。
+还有其他方法可以安装recovery，例如使用来自root系统的dd 将其刷新到其分区。</code></pre><p>这里不需要说太多，但在继续让CyanogenMod工作之前确保recovery 正常工作。在开始测试实验性Android版本之前，绝对需要100％工作且可靠的recovery。</p>
+<h4 id="6-1-如有必要适配-recovery-ui-cpp"><a href="#6-1-如有必要适配-recovery-ui-cpp" class="headerlink" title="6.1 如有必要适配 recovery_ui.cpp"></a>6.1 如有必要适配 recovery_ui.cpp</h4><p>您可能会发现虽然 recovery 运行，但通常用于滚动选项的某些硬件按钮（如音量按钮或电源按钮）不起作用。</p>
+<p>您可能需要调整GPIO值才能识别按钮。同样，您可能希望包含/排除选项或修改其他UI元素。</p>
+<p>为此，您可能希望创建和编辑/device/[vendor]/[codename]/recovery/recovery_ui.cpp。您可以找到此文件的大量示例，构建它的关联recovery/Android.mk文件以及如何使用它。</p>
+<pre><code>提示:
+
+您可以在内核源代码中找到设备的GPIO值。</code></pre><h3 id="7-上传device-文件夹到github-并使用本地的-localmanifes-通过-repo-sync-自动同步"><a href="#7-上传device-文件夹到github-并使用本地的-localmanifes-通过-repo-sync-自动同步" class="headerlink" title="7. 上传device 文件夹到github, 并使用本地的 localmanifes 通过 repo sync 自动同步"></a>7. 上传device 文件夹到github, 并使用本地的 localmanifes 通过 repo sync 自动同步</h3><p>启动设备文件夹后，创建自己的GitHub帐户并将文件夹设置为公共GitHub存储库。这是了解git的绝佳机会，而且您可以与可以与您协作的其他人访问您的仓库。</p>
+<p>命名存储库时，请使用android_device_VENDOR_CODENAME格式，其中VENDOR和CODENAME使用新设备的值。因此，假设您的GitHub帐户名称为<code>fat-fire</code>，而您的设备代号为<code>encore</code>，由Barnes and Noble制造。你应该调用你的存储库android_device_bn_encore。可以通过 <a href="https://github.com/fat-tire/android_device_bn_encore" target="_blank" rel="noopener">https://github.com/fat-tire/android_device_bn_encore</a> 访问它。同样，内核存储库将被称为android_kernel_bn_encore。它可以通过 <a href="https://github.com/fat-tire/android_kernel_bn_encore" target="_blank" rel="noopener">https://github.com/fat-tire/android_kernel_bn_encore</a> 访问。</p>
+<p>最后要做的是为其他人创建一个本地清单，用于自动下载并随时了解您的更改。这是一个使用上面的场景的例子：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&lt;？xml version &#x3D;“1.0”encoding &#x3D;“UTF-8”？&gt;</span><br><span class="line">&lt;manifest&gt;</span><br><span class="line">  &lt;project name &#x3D;“fat-tire &#x2F; android_device_bn_encore”path &#x3D;“device &#x2F; bn &#x2F; encore”remote &#x3D;“github”revision &#x3D;“cm-10.1”&#x2F;&gt;</span><br><span class="line">  &lt;project name &#x3D;“fat-tire &#x2F; android_kernel_bn_encore”path &#x3D;“kernel &#x2F; bn &#x2F; encore”remote &#x3D;“github”revision &#x3D;“cm-10.1”&#x2F;&gt;</span><br><span class="line">&lt;&#x2F;manifest&gt;</span><br></pre></td></tr></table></figure>
+
+<pre><code>注意：
+
+revision属性是可选的。如果省略，则repo sync将使用默认清单中&lt;default ... /&gt; tag 指定的修订。</code></pre><p>一旦您验证了本地清单文件的工作流程，您就可以将其分享给其他人，然后他们可以验证您的工作成果。此时，您可以继续将更改推送到GitHub，甚至可以给其他用户开通访问权限，以便你们可以一起移植此设备。</p>
+<pre><code>提示 -- 使用其他存储库
+
+如果您发现由于某种原因需要替换或补充CyanogenMod提供的其他存储库，则可以使用本地清单添加其他存储库。一旦你完成所有工作，你就可以使用Gerrit将这些存储库中找到的东西提交回上游CyanogenMod。</code></pre><h3 id="8-添加-blobs-到-vendor-文件夹"><a href="#8-添加-blobs-到-vendor-文件夹" class="headerlink" title="8. 添加 blobs 到 vendor 文件夹"></a>8. 添加 blobs 到 vendor 文件夹</h3><p>一旦你有一个可正常工作的recovery，现在是时候让CyanogenMod建立和工作了。</p>
+<p>首先要做的是将所有 proprietary, 二进制blob, 放入vendor/ 文件夹，以及将在最终版本中包含它们的.mk文件。</p>
+<p>这需要三个步骤：</p>
+<pre><code>1. 创建extract-files.sh和setup-makefiles.sh脚本，使用adb从设备中提取这些blob文件，并将它们放在正确的/vendor/目录中。其他设备有很多可用的示例。
+2. 创建一个.mk Makefile，在构建过程中将这些文件复制到$OUT文件夹，并将它们放在正确的位置。再次，使用其他设备作为此Makefile应该是什么样的指南。示例文件名可能是BoardConfigVendor.mk
+3. 确保您刚刚创建的Makefile包含在主BoardConfig.mk中，通过命令如-include vendor/[vendor]/[codename]/BoardConfigVendor.mk。同样，现有设备可以说明这是如何完成的。</code></pre><h3 id="9-重新修改校正device-目录"><a href="#9-重新修改校正device-目录" class="headerlink" title="9. 重新修改校正device/ 目录"></a>9. 重新修改校正device/ 目录</h3><p>由于您的recovery 可正常工作，请返回并开始修改devices/ 文件夹中的文件。与往常一样，使用其他类似的设备作为参考。</p>
+<p>您现在可以轻松地进行备份和测试构建。 因此，开始调整设备文件夹本身，看看你是否可以启动它… 从那里开始就是一个接一个构建和支持各种部件和外围设备.</p>
+<h3 id="10-从制造厂-第三方厂商-获取帮助"><a href="#10-从制造厂-第三方厂商-获取帮助" class="headerlink" title="10. 从制造厂/第三方厂商 获取帮助"></a>10. 从制造厂/第三方厂商 获取帮助</h3><p>许多制造设备使用的底层平台的OEM（原始设备制造商）经常提供维基，文档和示例代码，可以帮助您完成移植。 您会发现一些公司对开发社区比其他公司更友好。 以下是一些更常见的OEM和供应商，以及可能有用的网站和存储库。</p>
+<p>（此列表不完整。请帮忙添加）</p>
+<table>
+<thead>
+<tr>
+<th>OEM</th>
+<th>Platform</th>
+<th>Repositories/Resources</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Google</td>
+<td>various</td>
+<td>Google’s Git Repository , Nexus binary blobs</td>
+</tr>
+<tr>
+<td>HTC</td>
+<td>various</td>
+<td>Dev Center</td>
+</tr>
+<tr>
+<td>HP</td>
+<td>various</td>
+<td>HP Open Source</td>
+</tr>
+<tr>
+<td>Lenovo</td>
+<td>various</td>
+<td>Lenovo Smartphones (Search your device)</td>
+</tr>
+<tr>
+<td>LG</td>
+<td>various</td>
+<td>LG Open Source Code Distribution</td>
+</tr>
+<tr>
+<td>Motorola</td>
+<td>various</td>
+<td>Motorola Open Source Center</td>
+</tr>
+<tr>
+<td>Nvidia</td>
+<td>Tegra</td>
+<td>Tegra’s GitWeb</td>
+</tr>
+<tr>
+<td>Qualcomm</td>
+<td>MSM/QSD</td>
+<td>Code Aurora Forum</td>
+</tr>
+<tr>
+<td>Samsung</td>
+<td>various</td>
+<td>Samsung Open Source Release Center</td>
+</tr>
+<tr>
+<td>Texas Instruments</td>
+<td>OMAP</td>
+<td><a href="http://www.omapzoom.com" target="_blank" rel="noopener">www.omapzoom.com</a> , Omappedia</td>
+</tr>
+</tbody></table>
+<p>有时如果有你问题， 可以通过email或者论坛向开发者寻求帮助</p>
+<h3 id="11-添加-xml-叠加层"><a href="#11-添加-xml-叠加层" class="headerlink" title="11. 添加 xml 叠加层"></a>11. 添加 xml 叠加层</h3><p>它很可能出现在你的device_[codename].mk文件中，有一行看起来像这样：</p>
+<pre><code>DEVICE_PACKAGE_OVERLAYS：= \
+    device/[vendor]/[codename]/overlay</code></pre><p>这样做是设置 overlay/ 文件夹，以允许您覆盖Android框架或应用程序使用的任何XML文件，仅适用于此设备。为此，请创建一个目录结构，该结构相对于源码根目录，映射于xml文件的一个镜像。然后替换要叠加的文件。</p>
+<p>示例：假设您要覆盖某些标准的Android设置。查看frameworks/base/core/res/res/values/config.xml中的文件。然后将其复制到设备/[vendor]/[codename]/overlay/frameworks/base/core/res/res/values/config.xml。现在你的版本将被用来代替另一个版本。您只需要包含您希望覆盖的设置 – 而不是所有设置，这样您就可以将文件削减为默认情况下更改的那些设置。</p>
+<p>您可以覆盖任何XML文件，影响布局，设置，首选项，翻译等。</p>
+<h3 id="12-编译-kernel-源码及内核模块"><a href="#12-编译-kernel-源码及内核模块" class="headerlink" title="12. 编译 kernel 源码及内核模块"></a>12. 编译 kernel 源码及内核模块</h3><p>如果您以前使用过预构建的内核，那么您可能希望从头开始构建内核。</p>
+<p>请参阅有关如何更改BoardConfig.mk文件的指令来构建CyanogenMod <a href="">build the kernel and any required kernel modules automatically</a>。</p>
+<h3 id="13-最后"><a href="#13-最后" class="headerlink" title="13. 最后"></a>13. 最后</h3><p>不可能只用一个维基页面告诉您从头到尾执行移植所需的所有信息。但是，希望您现在了解如何去的配置以及您需要采取的步骤。你总是在<a href="">论坛</a>或<a href="">IRC</a>上寻求帮助。拥有相同设备的其他人也可以参与其中。</p>
+<p>希望你会发现这个过程有益而且具有教育意义。它也会让你获得一些街头信誉。</p>
+<p>当你完成所有的工作，你的移植ROM比现有的系统更好…当它稳定，闪闪发光，奇妙而美妙……</p>
+<p>您可能希望在上游贡献您的工作。以下是<a href="">如何做到这一点</a>的说明。</p>
+<p>祝好运！</p>
+<h3 id="14-参考文献"><a href="#14-参考文献" class="headerlink" title="14. 参考文献"></a>14. 参考文献</h3><p><a href="https://groups.google.com/forum/?fromgroups#!forum/android-porting" target="_blank" rel="noopener">Android-Porting</a>  – 关于此主题的官方Google群组<br><a href="https://forum.cyanogenmod.org/topic/15492-general-cyanogenmod-porting-discussion/" target="_blank" rel="noopener">General CyanogenMod Porting Discussion</a> – 关于移植的论坛帖子</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/ROM%E7%A7%BB%E6%A4%8D/" rel="tag"># ROM移植</a>
+              <a href="/tags/LineageOS/" rel="tag"># LineageOS</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2019/07/25/android/advanced/jni_ndk_debugging/" rel="prev" title="JNI调试">
+      <i class="fa fa-chevron-left"></i> JNI调试
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2019/08/12/android/rom/ninja_build_system/" rel="next" title="(译)Ninja 编译系统">
+      (译)Ninja 编译系统 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-移植过程的一些提示"><span class="nav-number">1.</span> <span class="nav-text">1. 移植过程的一些提示</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-先决条件"><span class="nav-number">2.</span> <span class="nav-text">2. 先决条件</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-收集手机的信息"><span class="nav-number">3.</span> <span class="nav-text">3. 收集手机的信息</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#3-1-查看当前手机的-system-build-prop"><span class="nav-number">3.1.</span> <span class="nav-text">3.1 查看当前手机的 &#x2F;system&#x2F;build.prop</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-2-检查boot-img-recovery-img"><span class="nav-number">3.2.</span> <span class="nav-text">3.2 检查boot.img, recovery.img</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-3-收集一切可使用的源代码"><span class="nav-number">3.3.</span> <span class="nav-text">3.3 收集一切可使用的源代码</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-4-决定分区方案"><span class="nav-number">3.4.</span> <span class="nav-text">3.4 决定分区方案</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-创建三个文件目录"><span class="nav-number">4.</span> <span class="nav-text">4. 创建三个文件目录</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#4-1-方法一-使用-mkvendor-sh-生成文件结构"><span class="nav-number">4.1.</span> <span class="nav-text">4.1 方法一: 使用 mkvendor.sh 生成文件结构</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#4-2-方法二-fork一个同类机型的github仓库"><span class="nav-number">4.2.</span> <span class="nav-text">4.2 方法二: fork一个同类机型的github仓库</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#4-3-方法三-手动创建所有的目录和文件"><span class="nav-number">4.3.</span> <span class="nav-text">4.3 方法三: 手动创建所有的目录和文件</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-编写定制文件"><span class="nav-number">5.</span> <span class="nav-text">5. 编写定制文件</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#5-1-BoardConfig-mk"><span class="nav-number">5.1.</span> <span class="nav-text">5.1 BoardConfig.mk</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#5-2-device-codename-mk"><span class="nav-number">5.2.</span> <span class="nav-text">5.2 device_codename.mk</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#5-3-kernel"><span class="nav-number">5.3.</span> <span class="nav-text">5.3 kernel</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#5-4-cm-mk"><span class="nav-number">5.4.</span> <span class="nav-text">5.4 cm.mk</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#5-5-recovery-fstab"><span class="nav-number">5.5.</span> <span class="nav-text">5.5 recovery.fstab</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#5-6-vendorsetup-sh"><span class="nav-number">5.6.</span> <span class="nav-text">5.6 vendorsetup.sh</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#6-编译一个测试的-recovery-image"><span class="nav-number">6.</span> <span class="nav-text">6. 编译一个测试的 recovery image</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#6-1-如有必要适配-recovery-ui-cpp"><span class="nav-number">6.1.</span> <span class="nav-text">6.1 如有必要适配 recovery_ui.cpp</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#7-上传device-文件夹到github-并使用本地的-localmanifes-通过-repo-sync-自动同步"><span class="nav-number">7.</span> <span class="nav-text">7. 上传device 文件夹到github, 并使用本地的 localmanifes 通过 repo sync 自动同步</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#8-添加-blobs-到-vendor-文件夹"><span class="nav-number">8.</span> <span class="nav-text">8. 添加 blobs 到 vendor 文件夹</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#9-重新修改校正device-目录"><span class="nav-number">9.</span> <span class="nav-text">9. 重新修改校正device&#x2F; 目录</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#10-从制造厂-第三方厂商-获取帮助"><span class="nav-number">10.</span> <span class="nav-text">10. 从制造厂&#x2F;第三方厂商 获取帮助</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#11-添加-xml-叠加层"><span class="nav-number">11.</span> <span class="nav-text">11. 添加 xml 叠加层</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#12-编译-kernel-源码及内核模块"><span class="nav-number">12.</span> <span class="nav-text">12. 编译 kernel 源码及内核模块</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#13-最后"><span class="nav-number">13.</span> <span class="nav-text">13. 最后</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#14-参考文献"><span class="nav-number">14.</span> <span class="nav-text">14. 参考文献</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Sophimp"
+      src="/images/avatar.png">
+  <p class="site-author-name" itemprop="name">Sophimp</p>
+  <div class="site-description" itemprop="description">A dream begin</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">87</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+        <span class="site-state-item-count">20</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+        <span class="site-state-item-count">90</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/sophimp" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;sophimp" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:sophimp2020@126.com" title="E-Mail → mailto:sophimp2020@126.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Sophimp</span>
+</div>
+
+<!--
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a>
+  </div>
+-->
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="Total Visitors">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="Total Views">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

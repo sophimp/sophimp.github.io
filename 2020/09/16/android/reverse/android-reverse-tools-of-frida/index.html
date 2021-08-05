@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+  <link rel="stylesheet" href="/lib/pace/pace-theme-minimal.min.css">
+  <script src="/lib/pace/pace.min.js"></script>
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"sophimp.gitee.io","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="Frida工具很强大，github上Frida项目每次发布能有那么多的包， 有必要系统学习一下Frida工具。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Android逆向工具之 --- Frida">
+<meta property="og:url" content="http://sophimp.gitee.io/2020/09/16/android/reverse/android-reverse-tools-of-frida/index.html">
+<meta property="og:site_name" content="Sophimp&#39;s Space">
+<meta property="og:description" content="Frida工具很强大，github上Frida项目每次发布能有那么多的包， 有必要系统学习一下Frida工具。">
+<meta property="og:image" content="http://sophimp.gitee.io/images/frida_hack_architecture.png">
+<meta property="article:published_time" content="2020-09-16T01:49:27.000Z">
+<meta property="article:modified_time" content="2021-03-15T03:49:47.922Z">
+<meta property="article:author" content="Sophimp">
+<meta property="article:tag" content="Android逆向">
+<meta property="article:tag" content="逆向工程">
+<meta property="article:tag" content="逆向工具">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://sophimp.gitee.io/images/frida_hack_architecture.png">
+
+<link rel="canonical" href="http://sophimp.gitee.io/2020/09/16/android/reverse/android-reverse-tools-of-frida/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-Hans'
+  };
+</script>
+
+  <title>Android逆向工具之 --- Frida | Sophimp's Space</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+	
+	<script type="text/javascript" src="//cdn.bootcss.com/canvas-nest.js/1.0.0/canvas-nest.min.js"></script>
+	
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Sophimp's Space</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">coding & thinking</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+  <a href="https://github.com/sophimp" class="github-corner" title="Follow me on GitHub" aria-label="Follow me on GitHub" rel="noopener" target="_blank"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
+    <link itemprop="mainEntityOfPage" href="http://sophimp.gitee.io/2020/09/16/android/reverse/android-reverse-tools-of-frida/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.png">
+      <meta itemprop="name" content="Sophimp">
+      <meta itemprop="description" content="A dream begin">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Sophimp's Space">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Android逆向工具之 --- Frida
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2020-09-16 09:49:27" itemprop="dateCreated datePublished" datetime="2020-09-16T09:49:27+08:00">2020-09-16</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2021-03-15 11:49:47" itemprop="dateModified" datetime="2021-03-15T11:49:47+08:00">2021-03-15</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E9%80%86%E5%90%91%E5%B7%A5%E7%A8%8B/" itemprop="url" rel="index"><span itemprop="name">逆向工程</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="Views" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">Views: </span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span>
+            <div class="post-description">Frida工具很强大，github上Frida项目每次发布能有那么多的包， 有必要系统学习一下Frida工具。</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h3 id="Frida-简介"><a href="#Frida-简介" class="headerlink" title="Frida 简介"></a>Frida 简介</h3><h4 id="Frida-是什么"><a href="#Frida-是什么" class="headerlink" title="Frida 是什么"></a>Frida 是什么</h4><p>It’s Greasemonkey for native apps, or, put in more technical terms, it’s a dynamic code instrumentation toolkit.<br>Frida 是用于原生apps 的Greasemonkey(是一个脚本框架)，或者换句话说， 它是一个动态代码检测工具包。它可以让你注入javascript代码片段或者定制的库代码到Windows, MacOS, GNU/Linux, Android 和 QNX 这些系统的应用中。<br>Firda 也提供了一些基于Frida API 的简单工具。 这些工具这可按原样使用， 根据需要进行调整， 或者用于教学如何使用API。</p>
+<h4 id="使用场景"><a href="#使用场景" class="headerlink" title="使用场景"></a>使用场景</h4><ul>
+<li><p>有一个热门的IOS应用， 你想与其交互，但是它的网络协议都加密了，使用wireshark之类的抓包工具并不能搞定，这时候就可以使用Frida来进行API跟踪。</p>
+</li>
+<li><p>如果一个已经发布到外网的应用出了问题， 但是发布版本的log日志不够详细。这个时候你不必再重新构建一个新版本进行发布， 只需要使用Frida简单写几行Python 代码做一个工具，在任何你需要诊断的位置加上日志。这个工具可以工作在多个版本的应用上(只要hook的api没有变化的版本都可以使用)。</p>
+</li>
+<li><p>比如在steroids上构建一个Wireshark 用作加密网络嗅探，不必去搭一个测试实验环境，可以使用Frida 修改函数去伪造网络条件。</p>
+</li>
+<li><p>内部应用程序可以使用一些黑盒测试(Frida搭建), 这样能避免测试代码污染生产代码。</p>
+</li>
+</ul>
+<h4 id="为何使用Python-API，-但是使用Javascript来写调试逻辑"><a href="#为何使用Python-API，-但是使用Javascript来写调试逻辑" class="headerlink" title="为何使用Python API， 但是使用Javascript来写调试逻辑?"></a>为何使用Python API， 但是使用Javascript来写调试逻辑?</h4><p>frida-core 使用C语言编写的, 并在目标进程中注入了 google v8引擎(用于解析javascript)，这样，在目标进程中, js代码就可以在进程中访问所有的内存空间，hook函数，甚至可以调用本地方法。 </p>
+<p>使用python 和 js 可以使用无风险api进行快速开发。 Frida可以方便的捕捉到js的错误并提供异常信息而避免于应用崩溃。</p>
+<p>当然，如果对python 不熟悉， 也可以直接使用C编写，基于 frida-core, 也同样绑定了Node.js, Python, Swift, .Net, Qml 等语言，同时也很容易绑定其他的语言和环境。 </p>
+<h4 id="Frida-是如何注入到进程的呢？"><a href="#Frida-是如何注入到进程的呢？" class="headerlink" title="Frida 是如何注入到进程的呢？"></a>Frida 是如何注入到进程的呢？</h4><p>进程必须要有调试权限，否则不可被注入</p>
+<p>注入库相关的逻辑是 frida-core, frida-gum, 通过调用attach方法，具体的实现还是得看源码， 在网上还没搜索到相关的原理(源码剖析)。</p>
+<h3 id="环境搭建"><a href="#环境搭建" class="headerlink" title="环境搭建"></a>环境搭建</h3><ul>
+<li>安装</li>
+</ul>
+<p>可参考<a href="https://github.com/frida/frida" target="_blank" rel="noopener">gituhb readme</a><br>在archlinux 上</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"># 先要安装 python3, 和nodejs</span><br><span class="line">yay -S python nodejs</span><br><span class="line"></span><br><span class="line"># 再使用 pip 安装 frida frida-tool, 这里需要换下国内的代理或者翻墙， 下载比较慢，失败了就再来次</span><br><span class="line"># frida-tool 是cli工具, frida 与python 绑定</span><br><span class="line">pip install frida frida-tool</span><br><span class="line"></span><br><span class="line"># 使用npm 安装 frida, 这一步是与 Node.js 绑定</span><br><span class="line">npm install frida</span><br><span class="line"></span><br><span class="line"># 再根据 frida --version 的版本 在github的release版本中下载对应的平台的frida-server</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>测试<br>可以在本机上进行测试, linux下平台可以注入 cat进程， windows平台可以注入 notepad++ 进程</li>
+</ul>
+<p>以linux平台为例, 在一个终断，开启 cat 进程</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cat</span><br></pre></td></tr></table></figure>
+<p>将如下测试代码保存在一个example_frida.py中</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> frida</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">on_message</span><span class="params">(message, data)</span>:</span></span><br><span class="line">    print(<span class="string">"[on_message] message:"</span>, message, <span class="string">"data:"</span>, data)</span><br><span class="line"></span><br><span class="line">session = frida.attach(<span class="string">"cat"</span>)</span><br><span class="line"></span><br><span class="line">script = session.create_script(<span class="string">"""</span></span><br><span class="line"><span class="string">rpc.exports.enumerateModules = function () &#123;</span></span><br><span class="line"><span class="string">  return Process.enumerateModules();</span></span><br><span class="line"><span class="string">&#125;;</span></span><br><span class="line"><span class="string">"""</span>)</span><br><span class="line">script.on(<span class="string">"message"</span>, on_message)</span><br><span class="line">script.load()</span><br><span class="line"></span><br><span class="line">print([m[<span class="string">"name"</span>] <span class="keyword">for</span> m <span class="keyword">in</span> script.exports.enumerate_modules()])</span><br></pre></td></tr></table></figure>
+<p>另开一个终端</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 先使能进程的ptrace属性</span></span><br><span class="line">sudo sysctl kernel.yama.ptrace_scope=0</span><br><span class="line"></span><br><span class="line"><span class="comment"># 再运行测试代码</span></span><br><span class="line">python example_frida.py</span><br></pre></td></tr></table></figure>
+<p>看到类似如下输出即环境可用</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[u<span class="string">'cat'</span>, …, u<span class="string">'ld-2.15.so'</span>]</span><br></pre></td></tr></table></figure>
+
+<p>各发布包的作用<br>| 名称 | 作用 |<br>|:–:|:–:|<br>| frida-clr | .Net 绑定库 |<br>| frida-core-devkit | C语言编写的 frida 核心开发库, 支持Window, MacOS, Android, IOS, arm与x86平台 |<br>| frida-gadget | 一个共享库，可以在不支持injected操作模式的情况下, 由要检测的程序加载 |<br>| frida-gum-devkit | C语言编写的跨平台检测和自省库, frida-core依赖此库实现了JavaScript的绑定库 frida-GumJS|<br>| frida-gumjs-devkit | Javascript 绑定库 |<br>| frida-inject | &lt;++&gt; |<br>| frida-qml | qml 绑定库 |<br>| frida-server | 放在被hook的平台上, 是一个可执行程序, 通过TCP将frida-core的能力暴露给电脑端 |<br>| frida-swift | swift绑定库 |<br>| frida-electron | 使用electron 为frida提供的图形界面 |<br>| frida-node | Node.js 绑定库 |<br>| frida-iphones | &lt;++&gt; |<br>| python3-frida | python3 绑定库 |</p>
+<p>自编译各平台的包</p>
+<h3 id="操作模式"><a href="#操作模式" class="headerlink" title="操作模式"></a>操作模式</h3><ul>
+<li>注入(Injected)</li>
+</ul>
+<p>将一个现有的程序附加到一个正在运行的程序中, 或者劫持一个正在生成的程序，在其中运行自己的检测逻辑，这种行为就是注入。<br>是通过frida-server运行在IOS或Android手机中，frida-server 本质上是一个伺服进程, 能过TCP 将 firda-core的能力暴露给客户端。</p>
+<ul>
+<li>嵌入(Embedded)</li>
+</ul>
+<p>嵌入模式是无法使用注入模式的情况下(如IOS无法越狱，Android无法root)检测程序的一种方式。<br>这个时候，可以通过在需要检测的程序中嵌入 frida-gadget 共享库,  在加载这个共享库的时候，就可以通过Firda工具(如frida-trace)待检测程序远程交互。<br>frida-gadget 提供一种完全自主的方式在文件系统外运行脚本，而无需任何外部通信。 </p>
+<ul>
+<li>预加载(Preloaded)</li>
+</ul>
+<p>frida-gadget 同样也提供了从文件系统加载脚本来自动运行的能力，需要配置相关设置。</p>
+<h3 id="Gadget"><a href="#Gadget" class="headerlink" title="Gadget"></a>Gadget</h3><p>frida-gadget 是一个共享库，在注入模式不可用的时候，由需要检测的程序集成加载。</p>
+<h3 id="Hacking"><a href="#Hacking" class="headerlink" title="Hacking"></a>Hacking</h3><p>介绍了使用frida Hacking系统的架构</p>
+<p><img src="/images/frida_hack_architecture.png" alt="hack_architecture"></p>
+<p>详情请看<a href="https://frida.re/docs/hacking/" target="_blank" rel="noopener">frida-hacing</a></p>
+<h3 id="Stalker"><a href="#Stalker" class="headerlink" title="Stalker"></a>Stalker</h3><p>Stalker 是一个代码跟踪引擎。<br>更说细的介绍请查看 <a href="/2020/09/17/android/reverse/android-reverse-tools-for-frida-stalker/" title="Android 逆向工具之 --- frida stalker">Android 逆向工具之 --- frida stalker</a></p>
+<h3 id="frida-使用"><a href="#frida-使用" class="headerlink" title="frida 使用"></a>frida 使用</h3><p>Functions 和 Messages</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># python 代码，导入 frida库</span></span><br><span class="line"><span class="keyword">import</span> frida</span><br><span class="line"><span class="keyword">import</span> sys</span><br><span class="line"></span><br><span class="line"><span class="comment"># hook代码</span></span><br><span class="line">session = frida.attach(<span class="string">"client"</span>)</span><br><span class="line">script = session.create_script(<span class="string">""" javascript 绑定库脚本 """</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 可以通过javascript 中绑定的send(), error() 来发送消息， 这个方法会被回调</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">on_message</span><span class="params">(message, data)</span>:</span></span><br><span class="line">    <span class="keyword">if</span> message[<span class="string">'type'</span>] == <span class="string">'error'</span>:</span><br><span class="line">        print(<span class="string">"[!] "</span> + message[<span class="string">'stack'</span>])</span><br><span class="line">    <span class="keyword">elif</span> message[<span class="string">'type'</span>] == <span class="string">'send'</span>:</span><br><span class="line">        print(<span class="string">"[i] "</span> + message[<span class="string">'payload'</span>])</span><br><span class="line">    <span class="keyword">else</span>:</span><br><span class="line">        print(message)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 注册回调监听</span></span><br><span class="line">script.on(<span class="string">'message'</span>, on_message)</span><br><span class="line"><span class="comment"># 加载脚本</span></span><br><span class="line">script.load()</span><br><span class="line">sys.stdin.read()</span><br></pre></td></tr></table></figure>
+
+<p>frida 可以attach 设备进程，使用脚本交互调查</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># attch 目标进程</span></span><br><span class="line">frida -U &lt;process_name&gt;  <span class="comment"># process_name 可以通过 frida-ps -U 查</span></span><br><span class="line">frida -h 查看详情</span><br></pre></td></tr></table></figure>
+
+<p>frida-ps 查看远程设备所以正在运行的进程</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">firda-ps -Uai <span class="comment"># 列出远程设备所有运行的进程</span></span><br><span class="line">frida-ps -h 查看详情</span><br></pre></td></tr></table></figure>
+
+<p>frida-trace 可以跟踪方法调用</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># function_name 支持正则</span></span><br><span class="line">frida-trace -U -i &lt;function_name&gt; &lt;process-name&gt;</span><br><span class="line"></span><br><span class="line">frida-trace -h 查看详情</span><br></pre></td></tr></table></figure>
+
+<p>frida-discover 查看程序内部的方法，然后可以通过frida-trace来跟踪</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">frida-discover -n &lt;process_name&gt;</span><br><span class="line">frida-discover -p &lt;pid&gt;</span><br><span class="line">frida-discover -h</span><br></pre></td></tr></table></figure>
+
+<p>frida-ls-devices 查看当前设备<br>frida-kill 可以杀死远程设备进程</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">frida-ps -D &lt;device_id&gt; -a <span class="comment"># 查看进程</span></span><br><span class="line">frida-kill -D &lt;device_id&gt; &lt;pid&gt;</span><br></pre></td></tr></table></figure>
+
+<h3 id="Javascript-APIs"><a href="#Javascript-APIs" class="headerlink" title="Javascript APIs"></a>Javascript APIs</h3><ol>
+<li><p>Runtime Information</p>
+</li>
+<li><p>Process, Thread, Module and Memory</p>
+</li>
+<li><p>Data Types, Function and Callback</p>
+</li>
+<li><p>Network</p>
+</li>
+<li><p>File and Stream</p>
+</li>
+<li><p>Database</p>
+</li>
+<li><p>Instrumentation</p>
+</li>
+<li><p>CPU instruction</p>
+</li>
+<li><p>Other</p>
+<h3 id="资料"><a href="#资料" class="headerlink" title="资料"></a>资料</h3></li>
+</ol>
+<p><a href="https://frida.re/docs/home/" target="_blank" rel="noopener">官方文档</a></p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Android%E9%80%86%E5%90%91/" rel="tag"># Android逆向</a>
+              <a href="/tags/%E9%80%86%E5%90%91%E5%B7%A5%E7%A8%8B/" rel="tag"># 逆向工程</a>
+              <a href="/tags/%E9%80%86%E5%90%91%E5%B7%A5%E5%85%B7/" rel="tag"># 逆向工具</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2020/09/14/android/reverse/android-reverse-first-practice/" rel="prev" title="Android逆向(2) - 加固，脱壳技术">
+      <i class="fa fa-chevron-left"></i> Android逆向(2) - 加固，脱壳技术
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2020/09/17/android/reverse/android-reverse-tools-for-frida-stalker/" rel="next" title="Android 逆向工具之 --- frida stalker">
+      Android 逆向工具之 --- frida stalker <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#Frida-简介"><span class="nav-number">1.</span> <span class="nav-text">Frida 简介</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Frida-是什么"><span class="nav-number">1.1.</span> <span class="nav-text">Frida 是什么</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#使用场景"><span class="nav-number">1.2.</span> <span class="nav-text">使用场景</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#为何使用Python-API，-但是使用Javascript来写调试逻辑"><span class="nav-number">1.3.</span> <span class="nav-text">为何使用Python API， 但是使用Javascript来写调试逻辑?</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Frida-是如何注入到进程的呢？"><span class="nav-number">1.4.</span> <span class="nav-text">Frida 是如何注入到进程的呢？</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#环境搭建"><span class="nav-number">2.</span> <span class="nav-text">环境搭建</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#操作模式"><span class="nav-number">3.</span> <span class="nav-text">操作模式</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Gadget"><span class="nav-number">4.</span> <span class="nav-text">Gadget</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Hacking"><span class="nav-number">5.</span> <span class="nav-text">Hacking</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Stalker"><span class="nav-number">6.</span> <span class="nav-text">Stalker</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#frida-使用"><span class="nav-number">7.</span> <span class="nav-text">frida 使用</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Javascript-APIs"><span class="nav-number">8.</span> <span class="nav-text">Javascript APIs</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#资料"><span class="nav-number">9.</span> <span class="nav-text">资料</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Sophimp"
+      src="/images/avatar.png">
+  <p class="site-author-name" itemprop="name">Sophimp</p>
+  <div class="site-description" itemprop="description">A dream begin</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">87</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+        <span class="site-state-item-count">20</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+        <span class="site-state-item-count">90</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/sophimp" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;sophimp" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:sophimp2020@126.com" title="E-Mail → mailto:sophimp2020@126.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Sophimp</span>
+</div>
+
+<!--
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a>
+  </div>
+-->
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="Total Visitors">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="Total Views">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

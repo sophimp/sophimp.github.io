@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+  <link rel="stylesheet" href="/lib/pace/pace-theme-minimal.min.css">
+  <script src="/lib/pace/pace.min.js"></script>
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"sophimp.gitee.io","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="这两年主要玩Android系统与网络，对于应用层的开发有些陌生。然而现在终究是要靠应用技术吃饭，因此，借着重新学习Jetpack，做自己项目的机会，将Android应用层开发技术学习的过程记录下来, 后续再归纳整理成可读性更高的blog。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Android开发琐碎">
+<meta property="og:url" content="http://sophimp.gitee.io/2021/01/23/android/android-dev-buffer/index.html">
+<meta property="og:site_name" content="Sophimp&#39;s Space">
+<meta property="og:description" content="这两年主要玩Android系统与网络，对于应用层的开发有些陌生。然而现在终究是要靠应用技术吃饭，因此，借着重新学习Jetpack，做自己项目的机会，将Android应用层开发技术学习的过程记录下来, 后续再归纳整理成可读性更高的blog。">
+<meta property="article:published_time" content="2021-01-23T03:37:01.000Z">
+<meta property="article:modified_time" content="2021-07-30T01:41:51.904Z">
+<meta property="article:author" content="Sophimp">
+<meta property="article:tag" content="Android">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="http://sophimp.gitee.io/2021/01/23/android/android-dev-buffer/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-Hans'
+  };
+</script>
+
+  <title>Android开发琐碎 | Sophimp's Space</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+	
+	<script type="text/javascript" src="//cdn.bootcss.com/canvas-nest.js/1.0.0/canvas-nest.min.js"></script>
+	
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Sophimp's Space</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">coding & thinking</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+  <a href="https://github.com/sophimp" class="github-corner" title="Follow me on GitHub" aria-label="Follow me on GitHub" rel="noopener" target="_blank"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
+    <link itemprop="mainEntityOfPage" href="http://sophimp.gitee.io/2021/01/23/android/android-dev-buffer/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.png">
+      <meta itemprop="name" content="Sophimp">
+      <meta itemprop="description" content="A dream begin">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Sophimp's Space">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Android开发琐碎
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2021-01-23 11:37:01" itemprop="dateCreated datePublished" datetime="2021-01-23T11:37:01+08:00">2021-01-23</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2021-07-30 09:41:51" itemprop="dateModified" datetime="2021-07-30T09:41:51+08:00">2021-07-30</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Android/" itemprop="url" rel="index"><span itemprop="name">Android</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="Views" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">Views: </span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span>
+            <div class="post-description">这两年主要玩Android系统与网络，对于应用层的开发有些陌生。然而现在终究是要靠应用技术吃饭，因此，借着重新学习Jetpack，做自己项目的机会，将Android应用层开发技术学习的过程记录下来, 后续再归纳整理成可读性更高的blog。</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h3 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h3><p>这两年主要玩Android系统与网络，对于应用层的开发有些陌生。然而现在终究是要靠应用技术吃饭，因此，借着重新学习Jetpack，做自己项目的机会，将Android应用层开发技术学习的过程记录下来, 后续再归纳整理成可读性更高的blog。</p>
+<p>主要方针是，首要先学会如何使用, 初步理解原理，阶段性的整理成blog。</p>
+<h3 id="积累"><a href="#积累" class="headerlink" title="积累"></a>积累</h3><ul>
+<li>AppCompatActivity</li>
+</ul>
+<p>使用ActionBar, 包括action items, navigation 节点, 更多的ToolBar设置的api<br>内置 Dark 和 Light 主题<br>集成DrawerLayout</p>
+<p>继随自AppCompatActivity的Activity必须设置Theme.AppCompat 下的主题。</p>
+<ul>
+<li>ActionBar, Toolbar</li>
+</ul>
+<p>Toolbar 是ActionBar的类属， ActionBar是主要的具体实现，用来显示标题，Application级别的一致性的导航，和交互的条目。</p>
+<p>Toolbar 包含的元素，导航按钮，品牌logo, 标题与副标题，一个或多个自定义view, 行为菜单</p>
+<p>ActionBar 是针对整个应用的？ 若将ActionBar 当作Activity专有的，需要设计NoActionBar主题。<br>setLogo 用来替换默认的主页导航图标</p>
+<ul>
+<li>Window<br>抽象类，提供标准的UI策略, 如背景，标题区域，默认的按键事件处理。只有一个实现类 PhoneWinodw。</li>
+</ul>
+<p>作为最顶级的View视图，添加到WinodwManager中。</p>
+<ul>
+<li>CoordinateLayout, AppBarLayout, CollapsingToolbarLayout, NestedScrollView, </li>
+</ul>
+<p>CooridinatorLayout, 加强版的FrameLayout, 用于两个场景:<br>    1. 作为顶层级的Application装饰或chrome布局<br>    2. 作为专有的与一个或多个子view交互的容器。<br>    交互的方式由Behavior定义<br>    每个子view有一个anchor, anchor所通信的id是Coordinatorlayout中的任一子view, 但不能是自己或者自己的子view, 这可以放置浮动的view相对于其他任意的内容。<br>    dodge InsetEdge 可以在重叠的时候适当移动而避免重叠。</p>
+<p>AppBarLayout<br>    是一个垂直的LineageLayout, 实现了matirial design app bar 概念的特性，即滚动手势。<br>    子view通过setScrollFlags(int)和xml的属性app:layout_scrollFlags来提供滑动的特性。</p>
+<p>CollapsingToolbarlayout<br>    用来包装 Toolbar, 实现折叠效果。被设计成直接用作AppBarLayout的子view</p>
+<p>NestedScrollView<br>    默认支持嵌套手势的ScrollView</p>
+<p>CoordinatorLayout这一套是沉浸式布局的实现， 提供了固定的几种效果。我前期倒是用不上。 后绪再研究吧。</p>
+<ul>
+<li><p>AppBarConfiguration, NavigationUI, NavUtils</p>
+</li>
+<li><p>ViewBinding</p>
+<figure class="highlight gradle"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">android&#123;</span><br><span class="line">	<span class="comment">// android 4.0.-</span></span><br><span class="line">	viewBinding &#123;</span><br><span class="line">		enabled = <span class="keyword">true</span></span><br><span class="line">	&#125;</span><br><span class="line">	<span class="comment">// android 4.0.+ </span></span><br><span class="line">	buildFeatures&#123;</span><br><span class="line">		viewBinding = <span class="keyword">true</span></span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line">[viewbinding inclue](https:<span class="comment">//juejin.cn/post/6844904065655111693)</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>T extend Object, ? super Object</p>
+</li>
+</ul>
+<p>extend 只能读取子类, super 只能写子类。 根本思想是只能向上转型。</p>
+<ul>
+<li>widget, launcher, Activity的关系</li>
+</ul>
+<p>manifest文件由PM描述，然后在aws中注册，通过launcher是跳转到入口Activity, 但是通过widget, notification, 可以跳转到app中任何一个Activity。<br>aws是如何找到对应的Activity呢？直接按路径加载, 这样启动的Activity会不会开启进程, 走不走zygote</p>
+<ul>
+<li>依赖与关联，聚合与组合</li>
+</ul>
+<p>依赖与关联，是从代码角度，根据变量生命周期 划分</p>
+<p>聚合与组合，从业务角度，根据现实从属关系 划分, 从代码角度，封装性不同,</p>
+<p>依赖、关联、聚合、组合， 耦合度依次增加, 代码表现形式上都是关联的表现形式，作为局部变量或成员变量</p>
+<ul>
+<li><p>classpath, apply 与 dependencies<br>classpath 用来加载插件, apply 使用插件<br>denpendencies 用来加载库</p>
+</li>
+<li><p>enum的使用</p>
+</li>
+</ul>
+<p>enum最好不要使用其构造函数，可以使用一个Builder或者Impl来实现业务，这样在使用enum的时候，跟踪代码就比较方便。空间的增加可以忽略。<br>不推荐使用枚举的源头是《阿里巴巴java开发手册》，强制，枚举可用于参数，不可以用于返回值，在于版本升级，返回值会产生序例化错误。<br>我还是认同，这是反序例化库的问题，并不是java枚举的问题。枚举还是很好用的.</p>
+<ul>
+<li>qmui</li>
+</ul>
+<p>theme 观念， 产品观念</p>
+<ul>
+<li>音视频</li>
+</ul>
+<p>学习哪门技术，都得下心思，解决一个算一个<br>不管理应用开发，还是音视频，都是庞大的知识体系。还是得有所决择<br>深入音视频，更有前景一些，因此UI上的细节不必过于追究</p>
+<ul>
+<li><p>for 循环<br>两个分号之间添加判断，一旦不满足，就会break, 算是一个trick</p>
+</li>
+<li><p>桌面小组件<br>微件需显示在托管应用AppWidgetHost里，Launcher就是一个可托管微件的Host.<br>基于广播事件交互，</p>
+</li>
+</ul>
+<p>使用步骤<br>生命周期<br>限制<br>同广播使用</p>
+<ul>
+<li>event bus<br>方便，但是不可以传大数据，使用广播替代？</li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Android/" rel="tag"># Android</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2021/01/11/android/jetpack/jetpack-dagger-hilt/" rel="prev" title="Dagger2-Hilt">
+      <i class="fa fa-chevron-left"></i> Dagger2-Hilt
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2021/01/26/android/jetpack/jetpack-navigation/" rel="next" title="Jetpack Navigation">
+      Jetpack Navigation <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#背景"><span class="nav-number">1.</span> <span class="nav-text">背景</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#积累"><span class="nav-number">2.</span> <span class="nav-text">积累</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Sophimp"
+      src="/images/avatar.png">
+  <p class="site-author-name" itemprop="name">Sophimp</p>
+  <div class="site-description" itemprop="description">A dream begin</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">87</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+        <span class="site-state-item-count">20</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+        <span class="site-state-item-count">90</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/sophimp" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;sophimp" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:sophimp2020@126.com" title="E-Mail → mailto:sophimp2020@126.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Sophimp</span>
+</div>
+
+<!--
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a>
+  </div>
+-->
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="Total Visitors">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="Total Views">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

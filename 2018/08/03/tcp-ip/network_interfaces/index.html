@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+  <link rel="stylesheet" href="/lib/pace/pace-theme-minimal.min.css">
+  <script src="/lib/pace/pace.min.js"></script>
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"sophimp.gitee.io","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="tcp&#x2F;ip第八版，第二章, 网络接口, 读书笔记">
+<meta property="og:type" content="article">
+<meta property="og:title" content="TCP&#x2F;IP - 第二章 网终接口">
+<meta property="og:url" content="http://sophimp.gitee.io/2018/08/03/tcp-ip/network_interfaces/index.html">
+<meta property="og:site_name" content="Sophimp&#39;s Space">
+<meta property="og:description" content="tcp&#x2F;ip第八版，第二章, 网络接口, 读书笔记">
+<meta property="article:published_time" content="2018-08-03T03:48:13.000Z">
+<meta property="article:modified_time" content="2021-03-15T03:49:47.940Z">
+<meta property="article:author" content="Sophimp">
+<meta property="article:tag" content="TCP-IP">
+<meta property="article:tag" content="网络">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="http://sophimp.gitee.io/2018/08/03/tcp-ip/network_interfaces/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-Hans'
+  };
+</script>
+
+  <title>TCP/IP - 第二章 网终接口 | Sophimp's Space</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+	
+	<script type="text/javascript" src="//cdn.bootcss.com/canvas-nest.js/1.0.0/canvas-nest.min.js"></script>
+	
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Sophimp's Space</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">coding & thinking</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+  <a href="https://github.com/sophimp" class="github-corner" title="Follow me on GitHub" aria-label="Follow me on GitHub" rel="noopener" target="_blank"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
+    <link itemprop="mainEntityOfPage" href="http://sophimp.gitee.io/2018/08/03/tcp-ip/network_interfaces/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.png">
+      <meta itemprop="name" content="Sophimp">
+      <meta itemprop="description" content="A dream begin">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Sophimp's Space">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          TCP/IP - 第二章 网终接口
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2018-08-03 11:48:13" itemprop="dateCreated datePublished" datetime="2018-08-03T11:48:13+08:00">2018-08-03</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2021-03-15 11:49:47" itemprop="dateModified" datetime="2021-03-15T11:49:47+08:00">2021-03-15</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/TCP-IP/" itemprop="url" rel="index"><span itemprop="name">TCP-IP</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="Views" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">Views: </span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span>
+            <div class="post-description">tcp/ip第八版，第二章, 网络接口, 读书笔记</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="Network-interfaces"><a href="#Network-interfaces" class="headerlink" title="Network interfaces"></a>Network interfaces</h2><pre><code>- 是系统地聊聊互联网的接口么?  还是聊Network layer 网络层
+    * tcp/ip 应用的 protocols and interfaces
+    * 主要讨论 data link layer and physical layer
+- 看到此标题, 包括看了前段, 还是没有多的想法, 能从第一段看出到底讲什么吗?
+    * 本章总观一些协议和接口是如何让 tcp/ip 在各种各样的物理网络中流动
+    * tcp/ip 可以操作大量的物理网络, 以太网是大量使用这些协议的代表
+    * 本章主要讨论 OSI 模型中的 data link layer, 也会提及一些 physical layer的技术
+    * 仔细一记录, 还是能晓得讲些什么的
+- 该抓哪些点, 来构造出一个框架呢?
+    * 标题就是主要的框架, 仔细一读标题, 信息量很大, 可以作为框架的点</code></pre><h2 id="该章节的框架"><a href="#该章节的框架" class="headerlink" title="该章节的框架"></a>该章节的框架</h2><pre><code>- Ethernet and IEEE 802 local area networks(LANs)
+    以太网 和 局域网
+- Fiber distributed data interface (FDDI)
+    光纤分布式数据接口
+- Serial line IP (SLIP)
+    线性连接 ip
+- Point-to-Point protocol (PPP)
+    点对点协议
+- X.25
+    这是rfc中的一个standard?
+- Frame relay
+    帧分程传递
+- PPP over SONET and SDH circuits
+    点对点基于 SONET and SDH 循环
+- Multi-Path channel+ (MPC+)
+    多路径通道
+- Asynchronous transfer mode (ATM)
+    异步传输模式
+- Multiprotocol over ATM (MATM)
+    基于异步传输模式的多协议
+- 此章在 RCFs 中的位置</code></pre><h2 id="Ethernet-and-IEEE-802-local-area-networks-LANs"><a href="#Ethernet-and-IEEE-802-local-area-networks-LANs" class="headerlink" title="Ethernet and IEEE 802 local area networks(LANs)"></a>Ethernet and IEEE 802 local area networks(LANs)</h2><pre><code>以太网 和 局域网
+- the Ethernet coaxial cable
+    两种 frame formats 或 standars 可以使用同一种以太共轴电缆
+    frame formats(or standards) 是协议的一帧数据形式(或标准)
+    以太同轴电缆, 原来不同的数据还分不同的电缆? 一直以为电缆是通用的
+- Ethernet 和 IEEE 802.3
+    两种协议标准, 在header, type, length, SDAP, SSAP, Ctrl 等标志上有差异
+    802.2/802.3/802.5 在发展史上作了兼容, 但是没有对 LSAP的协议作兼容
+
+- 以太
+    传统的物理思维, 假设光传播的媒介, 后来证明光速不变性, 在真空中传播速度是一样的, 因此科学界抛弃了以太, 但是以太还是对这个世界有影响, 以太网的命名就是一个例子
+
+- 同轴电缆
+    * 同轴电缆有数据的传播上限,  按说不管是什么协议的数据, 在同一物理世界背景下, 都应该共用一种电缆呀?  但是如果所有的协议都走一种电缆, 也不是明智的选择, 数据的解析量就大了很多.  协议 datagram standard 并不一样, 可以共用一种电缆, 难不成不同的电缆传输不同的数据么? 不是所有的电缆都可以传输数据么, 为何要设计这样的同轴电缆呢?
+    * 所以不同的电缆, 只用来传输几种协议的数据 , 这样对于不同的网络应用场景, 就需要分别部署不同的电缆, 如 IBM token-ring LAN, 令牌环网(可理解为, 所有的数据包共用一段帧头,即令牌)
+    * 一根同轴电缆的带宽是有限的, 不同带宽可以规定不同的信号, 所以限制了一种线缆只能传输几种协议标准的数据
+    * 同轴电缆的网状是用来屏蔽电磁干扰? 
+        果然是的
+    * 50欧 和 75欧, 有效传输距离 185米, 这意味着两台终端的距离不能超过185米, 所以适用于集中型的网络, 全球的网络当然不能用这种线缆
+- gigabit Ethernet
+    现在的传输速率已经提升到 10Gb/s了, 基于 IEEE 802.3Z 但是还没有一种协议被采用成商业标准</code></pre><h2 id="Fiber-distributed-data-interface-FDDI"><a href="#Fiber-distributed-data-interface-FDDI" class="headerlink" title="Fiber distributed data interface (FDDI)"></a>Fiber distributed data interface (FDDI)</h2><pre><code>光纤分布式数据接口
+- 100M 光纤, fiber optic
+- 32-bit internet address 映射 48-bit FDDI address
+    光纤的传输位数是48位? 之前的同轴线是按频段来传输数据
+- ARP 是干嘛的, 动态发现程序
+- 广播地址
+    不管是 32位的网络地址, 还是48位的FDDI地址, 广播地址都是各位为1
+- big endian 也是网络字节序
+
+- SLIP 不是一个网络标准,  是一个 de facto standard, 也被记录在 RFC上
+    仅仅是一个 packet framing protocol, 提供如下能力
+        &gt; Addressing
+        &gt; Packet type identification
+        &gt; Error detection/correction
+        &gt; Compression
+        &gt; </code></pre><h2 id="网络问题"><a href="#网络问题" class="headerlink" title="网络问题:"></a>网络问题:</h2><pre><code>- 真正想要知道解决了什么问题, 还是要先总结一下有什么问题
+- 数据是怎么在 caber 各 fiber optic 中传输的
+    问题的核心是信号的采集, 只有采集到了信号, 才能对信号编码, 采集的元器件是传感器: 敏感元件, 转换元件, 信号调节转换电路, 辅助电源
+    至于电路中, 传输的是电流和光子
+    这一套流程, 按说在上学的时候就想明白了, 那时候迷惑的是软件部分
+- 为什么要定义不同位数的传输
+    肯定是最大效率的去使用传输能力
+- 允许存在不同位数传输的 线缆通信, 这个程序要怎么处理, 要如何定义标准
+    程序问题, 就相对容易一些了
+- 一条线缆, 肯定不只传输一种协议的数据, 针对不同协议, 要怎么处理, 有何标准
+    协议头, 多种协议的兼容处理, 是要麻烦一些, 所以, 一般一条线路也就只针对两三种协议标准的波, 而且大部分还可以共用
+- 寻址协议, 只是SLIP在做?
+- 链路层, 如何具体分工的, 感觉很多协议大都是在层级, 与两个层级间连通
+- IP层
+- 网络层
+- distributed 的数据, 如何同步, 如何调度
+- Network Interface 与 Intenet Protocol 有什么不一样的地方
+    前者, 跟RFCs关系密切, 大多是关于硬件接口的软件定义和处理(MTU, 全双工)
+    后者, 是概括OSI网络层的几种协议(IP, ICMP, ARP, DHCP)</code></pre>
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/TCP-IP/" rel="tag"># TCP-IP</a>
+              <a href="/tags/%E7%BD%91%E7%BB%9C/" rel="tag"># 网络</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2018/08/01/tcp-ip/tcp_ip_architecture/" rel="prev" title="TCP/IP - 第一章 架构，历史，标准和趋势">
+      <i class="fa fa-chevron-left"></i> TCP/IP - 第一章 架构，历史，标准和趋势
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2018/08/06/tcp-ip/network_protocols/" rel="next" title="TCP/IP - 第三章 网络协议">
+      TCP/IP - 第三章 网络协议 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Network-interfaces"><span class="nav-number">1.</span> <span class="nav-text">Network interfaces</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#该章节的框架"><span class="nav-number">2.</span> <span class="nav-text">该章节的框架</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Ethernet-and-IEEE-802-local-area-networks-LANs"><span class="nav-number">3.</span> <span class="nav-text">Ethernet and IEEE 802 local area networks(LANs)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Fiber-distributed-data-interface-FDDI"><span class="nav-number">4.</span> <span class="nav-text">Fiber distributed data interface (FDDI)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#网络问题"><span class="nav-number">5.</span> <span class="nav-text">网络问题:</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Sophimp"
+      src="/images/avatar.png">
+  <p class="site-author-name" itemprop="name">Sophimp</p>
+  <div class="site-description" itemprop="description">A dream begin</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">87</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+        <span class="site-state-item-count">20</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+        <span class="site-state-item-count">90</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/sophimp" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;sophimp" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:sophimp2020@126.com" title="E-Mail → mailto:sophimp2020@126.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Sophimp</span>
+</div>
+
+<!--
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a>
+  </div>
+-->
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="Total Visitors">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="Total Views">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

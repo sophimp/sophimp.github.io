@@ -1,0 +1,682 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+  <link rel="stylesheet" href="/lib/pace/pace-theme-minimal.min.css">
+  <script src="/lib/pace/pace.min.js"></script>
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"sophimp.gitee.io","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="tcp&#x2F;ip第八版，第三章,互联网络协议， 读书笔记">
+<meta property="og:type" content="article">
+<meta property="og:title" content="TCP&#x2F;IP - 第五章 路由协议">
+<meta property="og:url" content="http://sophimp.gitee.io/2018/08/13/tcp-ip/routing_protocols/index.html">
+<meta property="og:site_name" content="Sophimp&#39;s Space">
+<meta property="og:description" content="tcp&#x2F;ip第八版，第三章,互联网络协议， 读书笔记">
+<meta property="article:published_time" content="2018-08-13T13:01:22.000Z">
+<meta property="article:modified_time" content="2021-03-15T03:49:47.940Z">
+<meta property="article:author" content="Sophimp">
+<meta property="article:tag" content="TCP-IP">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="http://sophimp.gitee.io/2018/08/13/tcp-ip/routing_protocols/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-Hans'
+  };
+</script>
+
+  <title>TCP/IP - 第五章 路由协议 | Sophimp's Space</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+	
+	<script type="text/javascript" src="//cdn.bootcss.com/canvas-nest.js/1.0.0/canvas-nest.min.js"></script>
+	
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Sophimp's Space</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">coding & thinking</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+  <a href="https://github.com/sophimp" class="github-corner" title="Follow me on GitHub" aria-label="Follow me on GitHub" rel="noopener" target="_blank"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
+    <link itemprop="mainEntityOfPage" href="http://sophimp.gitee.io/2018/08/13/tcp-ip/routing_protocols/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.png">
+      <meta itemprop="name" content="Sophimp">
+      <meta itemprop="description" content="A dream begin">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Sophimp's Space">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          TCP/IP - 第五章 路由协议
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2018-08-13 21:01:22" itemprop="dateCreated datePublished" datetime="2018-08-13T21:01:22+08:00">2018-08-13</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2021-03-15 11:49:47" itemprop="dateModified" datetime="2021-03-15T11:49:47+08:00">2021-03-15</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/TCP-IP/" itemprop="url" rel="index"><span itemprop="name">TCP-IP</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="Views" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">Views: </span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span>
+            <div class="post-description">tcp/ip第八版，第三章,互联网络协议， 读书笔记</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="Routing-protocols"><a href="#Routing-protocols" class="headerlink" title="Routing protocols"></a>Routing protocols</h2><ul>
+<li>路由协议, 是路由器的协议? 肯定不是指路由器, 路由器可能也只是某一个功能, 这一章, 会不支更实用一些? </li>
+<li>学完这一章, 能干什么呢, 设置路由器, 搭服务器的时候, 会更清晰? 知道了socket 和 port 的概念, 服务器的搭建基本没问题了, 可能更高级一些的分布式服务器, 会用到?</li>
+<li>路由协议, 应该也是安全高发区, 黑客的必备知识, 每个环节都有安全隐患, 这里能和黑客关联大吗?</li>
+</ul>
+<h2 id="considering-befor-reading"><a href="#considering-befor-reading" class="headerlink" title="considering befor reading"></a>considering befor reading</h2><ul>
+<li>Autonomous systems<ul>
+<li>自治系统 </li>
+</ul>
+</li>
+<li>Types of IP routing and IP routing algorithims.<ul>
+<li>ip routing类型及算法 </li>
+</ul>
+</li>
+<li>Routing Information Protocol (RIP)</li>
+<li>Routing Information Protocol version 2 (RIP-2)<ul>
+<li>路由信息协议, datagram format</li>
+<li>2个版本</li>
+</ul>
+</li>
+<li>RIPng for IPv6<ul>
+<li>初步了解 IPv6</li>
+</ul>
+</li>
+<li>Open Shortest Path First (OSPF)<ul>
+<li>这个是干嘛的 </li>
+</ul>
+</li>
+<li>Enhanced Interior Gateway Routing Protocol (EIGRP)<ul>
+<li>加强的内网网关路由协议</li>
+</ul>
+</li>
+<li>Exterior Gateway Protocol ( EGP )<ul>
+<li>外网网关协议</li>
+</ul>
+</li>
+<li>Border Gateway Protocol (BGP)<ul>
+<li>边界网关协议</li>
+</ul>
+</li>
+<li>Routing protocol selection<ul>
+<li>路由协议选择</li>
+</ul>
+</li>
+<li>Additional functions performed by the router<ul>
+<li>路由的扩展功能  </li>
+</ul>
+</li>
+<li>Routing processes in Unix-based systems<ul>
+<li>在unix操作系统处理路由</li>
+</ul>
+</li>
+<li>还是还有部分是猜不到意思, 猜到意思的, 重复多遍, 将其纳入思维宫殿</li>
+</ul>
+<h2 id="reading-record"><a href="#reading-record" class="headerlink" title="reading record"></a>reading record</h2><ol start="0">
+<li>overview</li>
+</ol>
+<ul>
+<li>This type device attaches to two or more physical networks and forwards datagrams between the networks. 还真就是说的 路由器实物</li>
+<li>The configuration of the device can be extended to contain information detailing remote networks. This information provides a more complete view of the overall environment.</li>
+</ul>
+<ol>
+<li>Autonomou systems</li>
+</ol>
+<ul>
+<li>is integral to understanding the function and scope of a routing protocol.</li>
+<li>The AS must present a consistent view of the internal destinations.</li>
+</ul>
+<ol start="2">
+<li>Types of IP routing and IP routing algorithms</li>
+</ol>
+<ul>
+<li><p>static routing</p>
+<ul>
+<li>Static routing is manually performed by netword administrator.</li>
+<li>Normally static routes are used only in simple topologies.</li>
+<li>To manually define a default route.</li>
+<li>To provide more secure network environment.</li>
+<li>When complex routing policies are required.</li>
+<li>To define a route that not automatically advertised within a network.</li>
+</ul>
+</li>
+<li><p>distance vector routing</p>
+<ul>
+<li>Distance vector algorithms are examples of dynamic routing protocols.</li>
+<li>local IP routing table, distance vector table.</li>
+<li>convergence time, routing loop, unstable packet forwarding, reduce capacity environments.</li>
+<li>RIP is a popular example of distance vector routing protocol.</li>
+</ul>
+</li>
+<li><p>link state routing</p>
+<ul>
+<li>A link state is the description of an interface on a router (for example, IP address, subnet mask, type of network) and its relationship to neighboring routers. The colletion of these link state forms a link state database. </li>
+<li>Shortest Path First algorithm.</li>
+<li>所有的可达路由表都存在在每个路由器里, 那样的话, 计算就简单了, 而不用去试探</li>
+</ul>
+</li>
+<li><p>path vector routing</p>
+<ul>
+<li>The path vector routing algorithm is somewhat similar to the distance vector algorithm in the sense that each border router advertises the destination it can reach to its neighboring router.</li>
+<li>advantages: <ul>
+<li>flexibility; </li>
+<li>computational complexity is smaller than that of the link state protocol; </li>
+<li>have homogeneous policies for route selection; </li>
+<li>Only the domains whose routes are affected by the changes have to recompute;</li>
+<li>Suppression of routing loops; </li>
+<li>Route computation precedes routing information dissemination.</li>
+<li>Path vector routing has the ability to selectively hide information.</li>
+</ul>
+</li>
+<li>disadvantages:<ul>
+<li>the effect of a topology change can propagate farther than in traditional distance vector algorithms.</li>
+<li>Unless the network topology is fully meshed or is able to appear so, routing loops can become an issue.</li>
+</ul>
+</li>
+<li>BGP is a popular example of a path vector routing protocol.</li>
+</ul>
+</li>
+<li><p>hybrid routing</p>
+<ul>
+<li>These protocols attempt to combine the positive attributes of both distance vector and link state protocols.</li>
+</ul>
+</li>
+</ul>
+<ol start="3">
+<li>Routing Information Protocol</li>
+</ol>
+<ul>
+<li>RIP packet types</li>
+<li>RIP packet format</li>
+<li>RIP Modes of operation<ul>
+<li>active mode, passive(silent) mode</li>
+</ul>
+</li>
+<li>Calculating distance vectors<blockquote>
+<p>The distance vector table entries:</p>
+</blockquote>
+<ul>
+<li>the desination network (vector)</li>
+<li>the associated cost (distance)</li>
+<li>the IP address of the next-hop device</li>
+</ul>
+</li>
+<li>Convergence and counting to infinity<ul>
+<li>Each device claims to be able to reach the target network through the partner device.</li>
+<li>counting to infinity.</li>
+<li>In a RIP environment, any path exceeding 15 hops is considered invalid.<blockquote>
+<p>There are two enhancements to the basic distance vector algorithm that can minimize the counting to infinity problem:</p>
+</blockquote>
+</li>
+<li>Split horizon with poison revese<br>  Whit poison reverse, when a routing updaate indicates that a network is unreachable, routes are immediately removed from the routing table.<br>  This approach differs from the basic split horizon rule where routes are eliminated through timeouts.<br>  It might significantly increase the size of routing annoucements exchanged between neighbors.</li>
+<li>Triggered updates<br>  With triggered updates, whenever a router changes the cost of a route, it immediately sends the modified distance vector table to the neighboring devices.</li>
+</ul>
+</li>
+<li>RIP limitations<ul>
+<li>Path cost limits</li>
+<li>Network-intensive table updates</li>
+<li>Relatively slow convergence</li>
+<li>No support for variable length subnet masking</li>
+</ul>
+</li>
+</ul>
+<ol start="4">
+<li>Routing Information Protocol version 2<blockquote>
+<p>It was developed to extend RIP-1 functionality in small networks.</p>
+</blockquote>
+</li>
+</ol>
+<ul>
+<li>Support for CIDR and VLSM (variable length subnet masking)</li>
+<li>Support for multicasting</li>
+<li>Support for authentication</li>
+<li>Support for RIP-1</li>
+<li>RIP-2 packet format</li>
+<li>RIP-2 limitations<ul>
+<li>However, the path cost limits and slow convergence inherent in RIP-1 networks are also concerns in RIP-2 environment.</li>
+<li>It is transmitted in clear text. This makes the network vulnerable to attack by anyone with direct physical access to the environment.</li>
+</ul>
+</li>
+</ul>
+<ol start="5">
+<li>RIPng for IPv6</li>
+</ol>
+<ul>
+<li>RIPng was developed to allow routers within an IPv6-based network to exchange information used to computer routes.</li>
+<li>RIPng is in RIP family, used the same algorithm, timers, and logic used in RIP-2</li>
+<li>RIPng has many of the same limitations inherent in other distance vector protocols.</li>
+<li>Differences between RIPng and RIP-2:<blockquote>
+<p>Support for authentication: RIP-2 has, RIPng not. RIPng uses the security features inherent in IPv6.<br>Support for IPv6 addressing format: RIPng does.</p>
+</blockquote>
+</li>
+<li>RIPng packet format<br>  RIPng are transmitted using UDP datagrams.</li>
+</ul>
+<ol start="6">
+<li>Openg Shortest Path First<blockquote>
+<p>OSPF is a link state protocol,interior gateway protocol, provides a number of features not found in distance vector protocols.</p>
+</blockquote>
+<ul>
+<li>Equal cost load balancing</li>
+<li>Logical partioning of the network</li>
+<li>Support for authentication</li>
+<li>Faster convergence time</li>
+<li>Support for CIDR(无类别域间路由, Classless Inter-Domain Routing) and VLSM</li>
+</ul>
+</li>
+</ol>
+<ul>
+<li>OSPF teminology<br>  * </li>
+<li>Neighbor communication</li>
+<li>OSPF neighnor state machine</li>
+<li>OSPF route redistribution</li>
+<li>OSPF stub areas</li>
+<li>OSPF route summarization</li>
+</ul>
+<ol start="7">
+<li>Enhanced Interior Gateway Routing Protocol</li>
+<li>Exterior Gateway Protocol</li>
+<li>Border Gateway Protocol</li>
+<li>Routing protocol selection</li>
+<li>Addtional functions performed by the router</li>
+<li>Routing process in UNIX-based systems</li>
+</ol>
+<h2 id="considering-after-reading"><a href="#considering-after-reading" class="headerlink" title="considering after reading"></a>considering after reading</h2><ul>
+<li>看不下去, 进度这么慢, 主要还是因为看不懂, 一会就枯燥了, 想不到看到了什么, 想不到想看什么, 想不到可以看什么</li>
+<li>一点点敖过去, 但是不对语言去总结归纳, 什么时候能有质的进步呢? 到目前质的进步就是能跟英语正面刚</li>
+<li>可能还有潜在的语感, 肌肉记忆, 所以, 不坚持下去, 什么问题也说明不了</li>
+<li>有时候, 就得面对这对无知的恐惧和期待, 才有可能顿悟</li>
+<li></li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/TCP-IP/" rel="tag"># TCP-IP</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2018/08/07/tcp-ip/transport_layer_protocol/" rel="prev" title="TCP/IP - 第四章 传输层协议">
+      <i class="fa fa-chevron-left"></i> TCP/IP - 第四章 传输层协议
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2018/12/03/android/rom/rom_refresh_to_device/" rel="next" title="Android刷机">
+      Android刷机 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Routing-protocols"><span class="nav-number">1.</span> <span class="nav-text">Routing protocols</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#considering-befor-reading"><span class="nav-number">2.</span> <span class="nav-text">considering befor reading</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#reading-record"><span class="nav-number">3.</span> <span class="nav-text">reading record</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#considering-after-reading"><span class="nav-number">4.</span> <span class="nav-text">considering after reading</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Sophimp"
+      src="/images/avatar.png">
+  <p class="site-author-name" itemprop="name">Sophimp</p>
+  <div class="site-description" itemprop="description">A dream begin</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">87</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+        <span class="site-state-item-count">20</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+        <span class="site-state-item-count">90</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/sophimp" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;sophimp" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:sophimp2020@126.com" title="E-Mail → mailto:sophimp2020@126.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Sophimp</span>
+</div>
+
+<!--
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a>
+  </div>
+-->
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="Total Visitors">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="Total Views">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

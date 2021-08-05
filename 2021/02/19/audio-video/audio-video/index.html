@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+  <link rel="stylesheet" href="/lib/pace/pace-theme-minimal.min.css">
+  <script src="/lib/pace/pace.min.js"></script>
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"sophimp.gitee.io","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="音视频技术，图形学技术，是我感兴趣的一个方向，念着学习也有两年了，由于种种原因，到现在还是没有开始。现在我认为计算机计术的面也扩展得差不多了， 是时候进入音视频领域深耕了。先收集一下课程的题纲，顺着路线自学一波，如果进展不顺利，再考虑买课程。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="音视频学习路线">
+<meta property="og:url" content="http://sophimp.gitee.io/2021/02/19/audio-video/audio-video/index.html">
+<meta property="og:site_name" content="Sophimp&#39;s Space">
+<meta property="og:description" content="音视频技术，图形学技术，是我感兴趣的一个方向，念着学习也有两年了，由于种种原因，到现在还是没有开始。现在我认为计算机计术的面也扩展得差不多了， 是时候进入音视频领域深耕了。先收集一下课程的题纲，顺着路线自学一波，如果进展不顺利，再考虑买课程。">
+<meta property="article:published_time" content="2021-02-19T02:09:58.000Z">
+<meta property="article:modified_time" content="2021-03-15T03:49:47.934Z">
+<meta property="article:author" content="Sophimp">
+<meta property="article:tag" content="Audio&amp;Video">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="http://sophimp.gitee.io/2021/02/19/audio-video/audio-video/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-Hans'
+  };
+</script>
+
+  <title>音视频学习路线 | Sophimp's Space</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+	
+	<script type="text/javascript" src="//cdn.bootcss.com/canvas-nest.js/1.0.0/canvas-nest.min.js"></script>
+	
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Sophimp's Space</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">coding & thinking</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+  <a href="https://github.com/sophimp" class="github-corner" title="Follow me on GitHub" aria-label="Follow me on GitHub" rel="noopener" target="_blank"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
+    <link itemprop="mainEntityOfPage" href="http://sophimp.gitee.io/2021/02/19/audio-video/audio-video/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.png">
+      <meta itemprop="name" content="Sophimp">
+      <meta itemprop="description" content="A dream begin">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Sophimp's Space">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          音视频学习路线
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2021-02-19 10:09:58" itemprop="dateCreated datePublished" datetime="2021-02-19T10:09:58+08:00">2021-02-19</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2021-03-15 11:49:47" itemprop="dateModified" datetime="2021-03-15T11:49:47+08:00">2021-03-15</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E9%9F%B3%E8%A7%86%E9%A2%91/" itemprop="url" rel="index"><span itemprop="name">音视频</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="Views" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">Views: </span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span>
+            <div class="post-description">音视频技术，图形学技术，是我感兴趣的一个方向，念着学习也有两年了，由于种种原因，到现在还是没有开始。现在我认为计算机计术的面也扩展得差不多了， 是时候进入音视频领域深耕了。先收集一下课程的题纲，顺着路线自学一波，如果进展不顺利，再考虑买课程。</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h3 id="出发点"><a href="#出发点" class="headerlink" title="出发点"></a>出发点</h3><p>音视频这个行业我还是比较看好的。<br>首先，音视频相关的知识及技术与图形学也相关，是我感兴趣的方向。<br>其次，这是一个趋势，声音和图像的传播必将是主流。<br>然后，这几年的开发我走得是广度优先的路线，接下来该深度优先发展一波了，因此，计划拿2年的时间，将音视频技术学到高级水平。</p>
+<h3 id="学习背景"><a href="#学习背景" class="headerlink" title="学习背景"></a>学习背景</h3><p>第1章 课程导学与准备工作<br> 本章主要介绍为何要带大家学习一个音视频初级入门课程，本课程中不仅系统的讲解了音视频到底是如何工作的，还会将音视频原理与实战相结合，讲解学习阶梯和实现思路，之后会为大家介绍本课程内容具体安排，最后给出如何学好这门课程的一些学习建议。希望大家都能通过这门课程，学有所成，学有所归。…<br>    1-1 课前必读（不看会错过一个亿）<br>    1-2 课程介绍及学习指导 试看<br>第2章 音视频环境基础<br>本章会讲解学习音视频课程之前必要的基础知识，如Linux常见命令以及环境变量的设置等。在之前的课程中，有很多同学提出的问题都是Linux的基础知识问题，尤其是在Windows下工作的同学，因此这部分知识对于 Windows 同学来说至关重要。…<br>    2-1 音视频应用的场景<br>    2-2 推流中断与画质不精晰的解决办法 试看<br>    2-3 Linux基础知识-1<br>    2-4 Linux基础知识-2<br>    2-5 巩固Linux基本命令（熟练可跳过）<br>    2-6 巩固vim的简单使用（熟练可跳过） 试看<br>    2-7 Macinux环境变量的含义与设置<br>第3章 在不同的系统上编译 ffmpeg</p>
+<p>本章会讲解在不同操作系统下如何编译安装ffmpeg，重点是讲解 Windows下编译 ffmpeg的方法等。实际上，在Windows上编译 ffmpeg 一直是一个难点，有很多同学都卡在这个问题上，因此通过本章节的内容就可以轻松解决你的问题。<br>    3-1 Mac或Linux下编译安装ffmpeg<br>    3-2 Windows下编译ffmpeg的几种方式<br>    3-3 Cygwin环境的搭建<br>    3-4 Cygwin下安装ffmpeg<br>    3-5 msys2环境的搭建<br>    3-6 msys2+mingw编译ffmpeg<br>    3-7 msys2+vs编译ffmpeg<br>第4章 C语言回顾</p>
+<p>本章会带领大家回顾C语言必要的基础知识，重点讲解C语言中的指针等难点内容，帮助大家为后续学习开发做好准备。<br>    4-1 C语言的HelloWorld<br>    4-2 C语言中的基本类型和逻辑运算<br>    4-3 C语言中的高级类型：数组、结构体和枚举类型<br>    4-4 C语言中的指针<br>    4-5 C语言中指针的使用<br>    4-6 内存管理与分配<br>    4-7 条件判断与循环<br>    4-8 C语言中的函数<br>    4-9 C语言如何操作文件<br>第5章 音频基础知识</p>
+<p>本章将带大家学习音频的基本原理（如声音是如何产生的，模拟信号是如何转为数字信号、音频的三要素等信息）。这些信息的掌握，对大家今后处理音频相关的问题时有切实的帮助，如当你播放PCM数据时声音不对，那一定是采样率、采样大小或通道数没有设置正确的原因。…<br>    5-1 音视频处理流程<br>    5-2 声音是如何被听到的<br>    5-3 声音的三要素<br>    5-4 模数转换<br>    5-5 PCM与WAV<br>第6章 【实战】音频采集</p>
+<p>本章向你介绍了如何通过ffmpeg API进行音视频数据采集。在讲解过程中，将手把手的带着你编写每一行代码，并对每个用到的 API 参数做了详细介绍。在本章的最后，你还将看到如何将采集到的音频数据录制成文件。相信这对有录制要求的同学也会有很大帮助。…<br>    6-1 通过命令方式采集音频数据<br>    6-2 swift语法一<br>    6-3 swift语法二<br>    6-4 创建Mac App<br>    6-5 创建 Button<br>    6-6 swift调用C语言<br>    6-7 Mac App中引入ffmpeg库<br>    6-8 打开音频设备<br>    6-9 从音频设备中读取音频数据<br>    6-10 代码优化<br>    6-11 录制音频数据<br>    6-12 通过界面来控制开启或关闭录制<br>第7章 音频编码原理</p>
+<p>本章向你介绍多种音频编码器（如 AAC, OPUS, speex等），并对各种不同的编码器进行比较，并在众多的编码器中重点向你介绍了 AAC 编码的以及它的不同级别的特性，同时还向你介绍了 AAC 数据头（ADTS） 的详细格式。<br>    7-1 音频有损压缩技术<br>    7-2 音频无损压缩技术<br>    7-3 几种常见编解码器的比较<br>    7-4 AAC编码器介绍<br>    7-5 ADTS格式<br>    7-6 通过ffmpeg生成AAC数据<br>第8章 【实战】音频编码</p>
+<p>本章以AAC编码为例，向你详细介绍了如何对PCM数据进行重采样以达到AAC 编码的要求，然后讲解了如何通过ffmpeg获取AAC编码器，如何设置编码参数，并最终实现编码的过程。在本章的最后，还将向你详细的介绍如何对代码进行优化以达到更好的编码风格。…<br>    8-1 什么是音频重采样<br>    8-2 实战音频重采样1<br>    8-3 实战音频重采样2<br>    8-4 创建AAC编码器1<br>    8-5 创建AAC编码器2<br>    8-6 编码使用的输入输出数据<br>    8-7 AAC编码器编码1<br>    8-8 AAC编码器编码2<br>    8-9 代码优化1<br>    8-10 代码优化2<br>    8-11 代码优化3<br>第9章 视频基础知识</p>
+<p>本章将讲解视频的基础知识（像素、RGB、分辨率等）、视频帧（图像）与显示器之间的关系。重点讲解YUV数据格式（如YUV4:4:4､YUV4:2:2､YUV4:2:0等），并让你掌握 YUV 与RGB 之间的转换以及视频未编码码流该如何计算。<br>    9-1 图像的基本概念<br>    9-2 屏幕显示器<br>    9-3 码流的计算<br>    9-4 图像的显示<br>    9-5 什么是YUV<br>    9-6 YUV的常见格式<br>    9-7 YUV的存储格式<br>    9-8 YUV实战<br>    9-9 实战从视频设备上采集数据1<br>    9-10 实战从视频设备上采集数据2<br>第10章 H264编码原理</p>
+<p>本章将介绍H264 的编码原理，这部分是本门课中最关键的知识点，通过本章的内容你不仅可以知道H264是如何对视频进行编码的，还可以了解H264的数据结构。通过这些知识的学习，你就可以解决很多常见的视频疑难问题，例如为什么播放器可以知道视频的分辨率，为什么视频会出现花屏，为什么会出现卡顿等等。…<br>    10-1 H264压缩码率与GOP<br>    10-2 H264中的I帧P帧和B帧<br>    10-3 H264中的宏块<br>    10-4 帧内压缩技术<br>    10-5 帧间压缩技术<br>    10-6 H264无损压缩及编解码处理流程<br>    10-7 H264码流结构<br>第11章 【实战】视频编码/解码</p>
+<p>本章将重点介绍如何对采集到的视频数据进行H264编码。同理，只要你学会了如何进行 H264编码，就会知道 H265/VP8/VP9如何进行编码。除此之外，你还将了解一些H264的重要编码参数，在不同的应用场景中掌握该用怎样的参数，这在我们实际工作中是至关重要的。…<br>    11-1 H264中的profile和level<br>    11-2 H264SPS中的重要参数<br>    11-3 H264PPS与Slice-Header<br>    11-4 H264分析工具1<br>    11-5 H264分析工具2<br>    11-6 实战打开视频编码器1<br>    11-7 实战打开视频编码器2<br>    11-8 实战准备要编码的数据<br>    11-9 实战NV12转YUV420P<br>    11-10 实战H264编码1<br>    11-11 实战H264编码2<br>    11-12 x264参数详解<br>第12章 【实战】RTMP传输</p>
+<p>在本章中你将首先详细了解 RTMP/FLV协议，然后利用librtmp 开源库将之前编码好的音频数据（AAC）与 编码好的视频数据（H264）生成 RTMP 流并推送到 CDN 流媒体服务器上，从而实现真正的娱乐直播。<br>    12-1 RTMP连接的建立<br>    12-2 创建RTMP流<br>    12-3 RTMP消息<br>    12-4 RTMP抓包分析<br>    12-5 FLV协议<br>    12-6 FLV协议分析器<br>    12-7 推流程序的骨架<br>    12-8 打开FLV文件<br>    12-9 连接RTMP流媒体服务器<br>    12-10 向流媒体服务器推流<br>    12-11 从FLV文件中读取tag数据1<br>    12-12 从FLV文件中读取tag数据2<br>    12-13 调试与优化<br>第13章 【实战】CDN 实现商业娱乐直播</p>
+<p>在本章中我们将按照由浅入难的顺序，即先介绍nginx实现流媒体服务器，然后讲解 SRS 实现流媒体服器，最后讲解在真正的商用产品中是如何通过 CDN云服务来实现大并发，通过本章的学习，你开发的产品将从 Demo 升级为真正可用的产品。…<br>    13-1 泛娱乐化直播系统架构介绍<br>    13-2 本机搭建RTMP服务<br>    13-3 SRS流媒体服务器简介<br>    13-4 SRS单机布署<br>    13-5 RTMP中的URL与VHOST<br>    13-6 SRS实现集群布署<br>    13-7 CDN网络<br>    13-8 阿里云视频直播<br>    13-9 真实的直播架构是怎样的<br>第14章 课程总结</p>
+<p>本章将带大家回顾总结课程重点难点，在课程问答区李超老师等着与你进一步交流，有问题欢迎大家到课程问答区提问。<br>    14-1 课程总结</p>
+<p><a href="https://blog.csdn.net/leixiaohua1020/article/details/42658139" target="_blank" rel="noopener">李超音视频基础课程</a></p>
+<p>音视频我想达到一个什么样的水平？我想在这个领域，至少深耕5年，看看后续的发展。<br><a href="https://blog.csdn.net/leixiaohua1020/article/details/15811977" target="_blank" rel="noopener">雷霄骅的blog</a></p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Audio-Video/" rel="tag"># Audio&Video</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2021/01/26/android/jetpack/jetpack-navigation/" rel="prev" title="Jetpack Navigation">
+      <i class="fa fa-chevron-left"></i> Jetpack Navigation
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2021/02/26/computer-system-and-society/" rel="next" title="计算机系统与现实社会 - 虚拟与现实">
+      计算机系统与现实社会 - 虚拟与现实 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#出发点"><span class="nav-number">1.</span> <span class="nav-text">出发点</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#学习背景"><span class="nav-number">2.</span> <span class="nav-text">学习背景</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Sophimp"
+      src="/images/avatar.png">
+  <p class="site-author-name" itemprop="name">Sophimp</p>
+  <div class="site-description" itemprop="description">A dream begin</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">87</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+        <span class="site-state-item-count">20</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+        <span class="site-state-item-count">90</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/sophimp" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;sophimp" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:sophimp2020@126.com" title="E-Mail → mailto:sophimp2020@126.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Sophimp</span>
+</div>
+
+<!--
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a>
+  </div>
+-->
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="Total Visitors">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="Total Views">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

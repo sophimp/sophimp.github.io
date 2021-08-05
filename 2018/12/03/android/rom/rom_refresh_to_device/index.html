@@ -1,0 +1,582 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+  <link rel="stylesheet" href="/lib/pace/pace-theme-minimal.min.css">
+  <script src="/lib/pace/pace.min.js"></script>
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"sophimp.gitee.io","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="rom 有很多种存在形式， 有线刷包，卡刷包， 还有system.img, 不同版本的系统，需要的fastboot也不一样，这里记录遇到的一些坑，后面根据学习进展再持续补充。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Android刷机">
+<meta property="og:url" content="http://sophimp.gitee.io/2018/12/03/android/rom/rom_refresh_to_device/index.html">
+<meta property="og:site_name" content="Sophimp&#39;s Space">
+<meta property="og:description" content="rom 有很多种存在形式， 有线刷包，卡刷包， 还有system.img, 不同版本的系统，需要的fastboot也不一样，这里记录遇到的一些坑，后面根据学习进展再持续补充。">
+<meta property="article:published_time" content="2018-12-03T14:06:17.000Z">
+<meta property="article:modified_time" content="2021-03-15T03:49:47.931Z">
+<meta property="article:author" content="Sophimp">
+<meta property="article:tag" content="ROM">
+<meta property="article:tag" content="刷机">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="http://sophimp.gitee.io/2018/12/03/android/rom/rom_refresh_to_device/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-Hans'
+  };
+</script>
+
+  <title>Android刷机 | Sophimp's Space</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+	
+	<script type="text/javascript" src="//cdn.bootcss.com/canvas-nest.js/1.0.0/canvas-nest.min.js"></script>
+	
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Sophimp's Space</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">coding & thinking</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+  <a href="https://github.com/sophimp" class="github-corner" title="Follow me on GitHub" aria-label="Follow me on GitHub" rel="noopener" target="_blank"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
+    <link itemprop="mainEntityOfPage" href="http://sophimp.gitee.io/2018/12/03/android/rom/rom_refresh_to_device/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.png">
+      <meta itemprop="name" content="Sophimp">
+      <meta itemprop="description" content="A dream begin">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Sophimp's Space">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Android刷机
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2018-12-03 22:06:17" itemprop="dateCreated datePublished" datetime="2018-12-03T22:06:17+08:00">2018-12-03</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2021-03-15 11:49:47" itemprop="dateModified" datetime="2021-03-15T11:49:47+08:00">2021-03-15</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Android/" itemprop="url" rel="index"><span itemprop="name">Android</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="Views" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">Views: </span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span>
+            <div class="post-description">rom 有很多种存在形式， 有线刷包，卡刷包， 还有system.img, 不同版本的系统，需要的fastboot也不一样，这里记录遇到的一些坑，后面根据学习进展再持续补充。</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="编译完后的rom-文件"><a href="#编译完后的rom-文件" class="headerlink" title="编译完后的rom 文件"></a>编译完后的rom 文件</h2><pre><code>system.img, ramdisk.img, userdata.img, boot.img, recovery.img</code></pre><h2 id="刷机"><a href="#刷机" class="headerlink" title="刷机"></a>刷机</h2><p><a href="https://zhuanlan.zhihu.com/p/19635679" target="_blank" rel="noopener">刷机原理，引用自知乎</a></p>
+<p>刷机的基础知识： </p>
+<pre><code>手机的软件大概分成几个部分：Radio（基带）,Bootloader（引导模式）,Recovery（恢复模式）,以及我们日常用的系统。刷机,可能只刷系统，也可能全部都刷。
+
+ADB/fastboot：Google 做的一套用来在电脑上通过 USB 线来调试手机的程序,用这个程序,我们可以（主要是在命令行界面敲 adb/fastboot 命令，也有一些人制作图形界面）调试、控制手机。「线刷」用的就是这个。
+
+Bootloader 模式（Fastboot 模式、引导模式）：关机状态下长按音量下+电源就可以进入，大概是图 1 的样子这个时候按音量键可以上下选择，Start - 正常开机、Recovery mode - 进入恢复模式、Restart bootloader - 重启引导模式、Power off - 关机，按电源键确认。这个模式下把手机连到电脑上就可以用命令调试。注意最下面的「LOCK STATE」，表示你的 bootloader 是否已经解锁。
+
+Recovery 模式（恢复模式）：相当于一个小型系统，可以用来把手机里的「刷机包」（也就是一个压缩包）刷到手机里，「卡刷」用的就是这个</code></pre><h2 id="替换launcher"><a href="#替换launcher" class="headerlink" title="替换launcher"></a>替换launcher</h2><ol>
+<li><p><a href="https://www.cnblogs.com/l2rf/p/4229157.html" target="_blank" rel="noopener">修改system.img</a></p>
+<blockquote>
+<p>生成oat文件 </p>
+</blockquote>
+<blockquote>
+<p>dex2oat –runtime-arg -Xms64m –runtime-arg -Xmx512m –dex-file=/data/local/tmp/Launcher3.dex –dex-location=<del>/aosp/aosp_build/Launcher3.apk –oat-file=</del>/aosp/aosp_build/Launcher3.odex –android-root=/system –instruction-set=armv8a –instruction-set-variant=armv8a –instruction-set-features=default –include-patch-information –runtime-arg -Xnorelocate –no-generate-debug-info –abort-on-hard-verifier-error</p>
+</blockquote>
+</li>
+</ol>
+<p>没有成功, launcher 需要系统签名，系统可设置安装的时候动态编译oat</p>
+<ol start="2">
+<li><p>直接下载现成的launcher<br> 下载小米的launcher 可以安装成功， 但是不能启动， 猜测是小米的launcher对自身的系统作了校验 </p>
+</li>
+<li><p>替换自己开发的app, 可以替换成功</p>
+</li>
+</ol>
+<h2 id="生成系统函数签名"><a href="#生成系统函数签名" class="headerlink" title="生成系统函数签名"></a>生成系统函数签名</h2><p><a href="https://www.jianshu.com/p/63d699cffa1a" target="_blank" rel="noopener">生成系统函数签名</a></p>
+<p><a href="https://blog.csdn.net/csh86277516/article/details/73549824" target="_blank" rel="noopener">android 系统签名</a></p>
+<pre><code>找到平台签名文件“platform.pk8”和“platform.x509.pem”
+
+文件位置 android/build/target/product/security/
+
+签名工具“signapk.jar”
+
+位置：android/prebuilts/sdk/tools/lib
+
+签名证书“platform.pk8 ”“platform.x509.pem ”，签名工具“signapk.jar ”放置在同一个文件夹；
+执行命令
+
+java -jar signapk.jar platform.x509.pem platform.pk8 Demo.apk signedDemo.apk
+
+或者直接在Ubuntu 编译环境执行
+java -jar out/host/linux-x86/framework/signapk.jar build/target/product/security/platform.x509.pem build/target/product/security/platform.pk8 input.apk output.apk
+
+生成平台platform.keystore文件：
+
+编译平台签名文件“platform.pk8”和“platform.x509.pem”
+
+文件位置：android/build/target/product/security/
+
+
+把pkcs8格式的私钥转化成pkcs12格式：
+
+openssl pkcs8 -in platform.pk8 -inform DER -outform PEM -out shared.priv.pem -nocrypt
+
+
+把x509.pem公钥转换成pkcs12格式：
+
+openssl pkcs12 -export -in platform.x509.pem -inkey     shared.priv.pem -out shared.pk12 -name androiddebugkey
+alias: androiddebugkey 密码都是：android
+
+
+生成platform.keystore
+
+keytool -importkeystore -deststorepass android -destkeypass android -destkeystore platform.keystore -srckeystore shared.pk12 -srcstoretype PKCS12 -srcstorepass android -alias androiddebugkey</code></pre><h2 id="调用系统权限验证"><a href="#调用系统权限验证" class="headerlink" title="调用系统权限验证"></a>调用系统权限验证</h2><p><a href="http://www.itboth.com/d/m6Bjae/android" target="_blank" rel="noopener">控制GPS 开关</a></p>
+<pre><code>1. 添加权限
+&lt;uses-permission android:name=&quot;android.permission.WRITE_SECURE_SETTINGS&quot; /&gt;
+2. 在AndroidManifest.xml设置android:sharedUserId=&quot;android.uid.system&quot;
+3. 使用上述生成的系统签名
+4. 控制gps
+Settings.Secure.setLocationProviderEnabled(contentResolver, LocationManager.GPS_PROVIDER, true)
+5. 直接生成release应用安装， 测试可成功控制gps</code></pre><h2 id="遇到问题"><a href="#遇到问题" class="headerlink" title="遇到问题"></a>遇到问题</h2><ol>
+<li>fastboot device</li>
+</ol>
+<p>no permissions (user in plugdev group; are your udev rules wrong?); see [<a href="http://developer.android.com/tools/device.html]" target="_blank" rel="noopener">http://developer.android.com/tools/device.html]</a>    fastboot</p>
+<p><a href="https://cxuef.github.io/android/Nexus-5X-%E5%88%B7%E5%85%A5Android-N-Preview%E5%8A%A8%E6%89%8B%E5%AE%9E%E8%B7%B5/" target="_blank" rel="noopener">解决办法, 修改.rules文件</a></p>
+<pre><code>- 设置usb权限
+- sudo vim /etc/udev/rules.d/99-vmware-scsi-udev.rules</code></pre><h2 id="定制rom"><a href="#定制rom" class="headerlink" title="定制rom"></a>定制rom</h2><ol>
+<li><p>如何定制其他机型的rom</p>
+<p> 组装驱动, 真得可以安装成功吗?<br> 编译原码要选哪一个平台呢?</p>
+</li>
+<li><p>wifi, 蓝牙, 通话, 短信功能会不会受到影响</p>
+</li>
+<li><p>Lineageos 和 mokee</p>
+<p> 又一次的刷新了新的知识面, 关于刷机, 还是懂得太少啊.<br> 这一下子又打开了一扇门, 是可以学习的方向<br> 清华的, 网络的开源组织们, 果然高人都很多, 也仅需要那几个高人就可以维护一个第三方的rom版本<br> 为何我动起了歪心思? 打起黑产的主意, 良心的拷问</p>
+</li>
+<li><p>magisk 与 xposed都与rom 有关, 是需要开发者相互支持的</p>
+</li>
+<li><p>如何去自己定制vendor 中的文件呢? </p>
+</li>
+<li><p>一个系统, 都包括了哪些东西</p>
+</li>
+</ol>
+<h2 id="linux-刷机"><a href="#linux-刷机" class="headerlink" title="linux 刷机"></a>linux 刷机</h2><p>所谓的刷机工具也是用了脚本而已, 所以可以直接运行脚本即可.</p>
+<p>解锁oem</p>
+<pre><code>fastboot oem nubia_unlock NUBIA_NX589J</code></pre><h3 id="遇到问题-1"><a href="#遇到问题-1" class="headerlink" title="遇到问题:"></a>遇到问题:</h3><ol>
+<li>不能识别</li>
+</ol>
+<p>重新添加一下/etc/udev/rules.d/<code>***.rules</code> 和adb.ini 就好了<br><a href="https://rachpt.cn/2018/07/06/adb-linux-and-mi8/" target="_blank" rel="noopener">mi8-adb-linux</a></p>
+<p>rules.d 文件重新生效命令</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo service udev reload</span><br></pre></td></tr></table></figure>
+<ol start="2">
+<li>ubuntu 上进入fastboot 就会重启</li>
+</ol>
+<p>重启adb</p>
+<p>按说目前的adb, fastboot都是最新的</p>
+<ol start="3">
+<li><p>刷recovery失败， fastboot Failed remote no such partition</p>
+<p> 先使用 fastboot getvar current-slot 得到一个字符<br> 然后 fastboot boot_字符 recovery.img<br> 就可以将recovery刷进去了</p>
+</li>
+<li><p>FFDM 模式的退出</p>
+</li>
+</ol>
+<p><a href="https://www.cnblogs.com/we-hjb/p/9769467.html" target="_blank" rel="noopener">使用QFIL</a> </p>
+<p><a href="https://www.cnblogs.com/we-hjb/archive/2018/10/13/9784659.html" target="_blank" rel="noopener">高通方案的几种开机模式</a></p>
+<p>总算有了突破， 进入了ffbm模式后， 一直进入不了fastboot 模式了， 网上有一个说的是先感受到震动， 松开power键， 看到画面， 再松开音量键<br>但是我遇到的情况是, 震动和画面一起的， 突然间发现， 在震动之前， 还有一个lte灯闪，这个时候，松开power键， 看到画面再松开音量键， 就成功进入了fastboot模式。 </p>
+<h3 id="OnePlus-6T-fajita-刷机"><a href="#OnePlus-6T-fajita-刷机" class="headerlink" title="OnePlus 6T fajita 刷机"></a>OnePlus 6T fajita 刷机</h3><p>刷入twrp 的recovery 导至wifi模块有问题， 但是官方的镜像是没有问题的，因此推断是内核有问题。</p>
+<p>还好twrp的recovery提供了刷入内核的功能， 那么直接将官言的OTA升级包解压出boot.img， 重新刷入内核即可。</p>
+<p>官言的ota 包解压出来是payload.bin, 需要使用工具<a href="https://github.com/vm03/payload_dumper" target="_blank" rel="noopener">payload_dumper</a>来解压出boot.img</p>
+<h3 id="小米手机usb安装免登陆打开"><a href="#小米手机usb安装免登陆打开" class="headerlink" title="小米手机usb安装免登陆打开"></a>小米手机usb安装免登陆打开</h3><p><a href="https://www.leadroyal.cn/?p=1189" target="_blank" rel="noopener">使用root跳过小米USB安装应用确认</a></p>
+<p>编辑 <code>/data/data/com.miui.securitycenter/shared_prefs/remote_provider_preferences.xml</code></p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">boolean</span> <span class="attr">name</span>=<span class="string">"security_adb_install_enable"</span> <span class="attr">value</span>=<span class="string">"true"</span> /&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">boolean</span> <span class="attr">name</span>=<span class="string">"permcenter_install_intercept_enabled"</span> <span class="attr">value</span>=<span class="string">"false"</span> /&gt;</span></span><br></pre></td></tr></table></figure>
+
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">setprop presist.security.adbinput 1</span><br><span class="line">setprop presist.fastboot.enable 1</span><br></pre></td></tr></table></figure>
+
+<h2 id="参考资源"><a href="#参考资源" class="headerlink" title="参考资源"></a>参考资源</h2><p><a href="https://www.jianshu.com/p/9605f895d153" target="_blank" rel="noopener">源码编译, 模块编译，sdk 编译</a></p>
+<p><a href="https://www.jianshu.com/p/afc3f1e3515b" target="_blank" rel="noopener">rom刷机</a></p>
+<p><a href="https://www.intellectsoft.net/blog/build-and-run-android-from-aosp-source-code-to-a-nexus-7/" target="_blank" rel="noopener">android 9.0 刷机</a></p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/ROM/" rel="tag"># ROM</a>
+              <a href="/tags/%E5%88%B7%E6%9C%BA/" rel="tag"># 刷机</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2018/08/13/tcp-ip/routing_protocols/" rel="prev" title="TCP/IP - 第五章 路由协议">
+      <i class="fa fa-chevron-left"></i> TCP/IP - 第五章 路由协议
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2019/03/28/android/rom/aosp_compile_bsic_software/" rel="next" title="AOSP源码同步与编译">
+      AOSP源码同步与编译 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#编译完后的rom-文件"><span class="nav-number">1.</span> <span class="nav-text">编译完后的rom 文件</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#刷机"><span class="nav-number">2.</span> <span class="nav-text">刷机</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#替换launcher"><span class="nav-number">3.</span> <span class="nav-text">替换launcher</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#生成系统函数签名"><span class="nav-number">4.</span> <span class="nav-text">生成系统函数签名</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#调用系统权限验证"><span class="nav-number">5.</span> <span class="nav-text">调用系统权限验证</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#遇到问题"><span class="nav-number">6.</span> <span class="nav-text">遇到问题</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#定制rom"><span class="nav-number">7.</span> <span class="nav-text">定制rom</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#linux-刷机"><span class="nav-number">8.</span> <span class="nav-text">linux 刷机</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#遇到问题-1"><span class="nav-number">8.1.</span> <span class="nav-text">遇到问题:</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#OnePlus-6T-fajita-刷机"><span class="nav-number">8.2.</span> <span class="nav-text">OnePlus 6T fajita 刷机</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#小米手机usb安装免登陆打开"><span class="nav-number">8.3.</span> <span class="nav-text">小米手机usb安装免登陆打开</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#参考资源"><span class="nav-number">9.</span> <span class="nav-text">参考资源</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Sophimp"
+      src="/images/avatar.png">
+  <p class="site-author-name" itemprop="name">Sophimp</p>
+  <div class="site-description" itemprop="description">A dream begin</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">87</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+        <span class="site-state-item-count">20</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+        <span class="site-state-item-count">90</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/sophimp" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;sophimp" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:sophimp2020@126.com" title="E-Mail → mailto:sophimp2020@126.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Sophimp</span>
+</div>
+
+<!--
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a>
+  </div>
+-->
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="Total Visitors">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="Total Views">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

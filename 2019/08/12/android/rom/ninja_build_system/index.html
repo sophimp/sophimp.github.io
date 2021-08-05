@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+  <link rel="stylesheet" href="/lib/pace/pace-theme-minimal.min.css">
+  <script src="/lib/pace/pace.min.js"></script>
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"sophimp.gitee.io","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="编译aosp, 有现成的脚本，别人适配好的机型，是很简单的事情，但是对于没有的机型，但可以找到相关的移植源码，如何编译呢？这时候就需要研究aosp的编译系统，看编译脚本，然后定制自己的脚本，编译过程中，各种错误，大多数情况通过编译日志也是可以找到解决办法的。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="(译)Ninja 编译系统">
+<meta property="og:url" content="http://sophimp.gitee.io/2019/08/12/android/rom/ninja_build_system/index.html">
+<meta property="og:site_name" content="Sophimp&#39;s Space">
+<meta property="og:description" content="编译aosp, 有现成的脚本，别人适配好的机型，是很简单的事情，但是对于没有的机型，但可以找到相关的移植源码，如何编译呢？这时候就需要研究aosp的编译系统，看编译脚本，然后定制自己的脚本，编译过程中，各种错误，大多数情况通过编译日志也是可以找到解决办法的。">
+<meta property="article:published_time" content="2019-08-12T13:05:59.000Z">
+<meta property="article:modified_time" content="2021-03-15T03:49:47.930Z">
+<meta property="article:author" content="Sophimp">
+<meta property="article:tag" content="rom">
+<meta property="article:tag" content="ninja">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="http://sophimp.gitee.io/2019/08/12/android/rom/ninja_build_system/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-Hans'
+  };
+</script>
+
+  <title>(译)Ninja 编译系统 | Sophimp's Space</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+	
+	<script type="text/javascript" src="//cdn.bootcss.com/canvas-nest.js/1.0.0/canvas-nest.min.js"></script>
+	
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Sophimp's Space</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">coding & thinking</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+  <a href="https://github.com/sophimp" class="github-corner" title="Follow me on GitHub" aria-label="Follow me on GitHub" rel="noopener" target="_blank"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
+    <link itemprop="mainEntityOfPage" href="http://sophimp.gitee.io/2019/08/12/android/rom/ninja_build_system/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.png">
+      <meta itemprop="name" content="Sophimp">
+      <meta itemprop="description" content="A dream begin">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Sophimp's Space">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          (译)Ninja 编译系统
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2019-08-12 21:05:59" itemprop="dateCreated datePublished" datetime="2019-08-12T21:05:59+08:00">2019-08-12</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2021-03-15 11:49:47" itemprop="dateModified" datetime="2021-03-15T11:49:47+08:00">2021-03-15</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Android/" itemprop="url" rel="index"><span itemprop="name">Android</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="Views" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">Views: </span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span>
+            <div class="post-description">编译aosp, 有现成的脚本，别人适配好的机型，是很简单的事情，但是对于没有的机型，但可以找到相关的移植源码，如何编译呢？这时候就需要研究aosp的编译系统，看编译脚本，然后定制自己的脚本，编译过程中，各种错误，大多数情况通过编译日志也是可以找到解决办法的。</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>原文请点击<a href="https://ninja-build.org/manual.html" target="_blank" rel="noopener">Ninja 编译系统</a></p>
+<h2 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h2><p>Ninja 是一种构建系统。它将文件的相互依赖性（通常是源代码和输出可执行文件）作为输入，并快速编排它们。</p>
+<p>Ninja加入了其他构建系统的海洋。其有所区别的的目标是快速。它诞生于<a href="http://neugierig.org/software/chromium/notes/2011/02/ninja.html" target="_blank" rel="noopener">我在Chromium浏览器项目上的工作</a>，该项目拥有超过30,000个源文件，其他构建系统（包括一个由自定义非递归Makefile构建的系统）在更改一个文件后需要数十秒钟才能开始构建。Ninja 只需不到一秒钟。</p>
+<h2 id="哲学概述"><a href="#哲学概述" class="headerlink" title="哲学概述"></a>哲学概述</h2><p>如果其他构建系统是高级语言，Ninja的目标是成为汇编语言。</p>
+<p>构建系统在需要做出决策时变得缓慢。当您处于编辑 - 编译周期时，您希望它尽可能快 - 您希望构建系统执行必要的最少工作以确定需要立即构建的内容。</p>
+<p>Ninja包含描述任意依赖图所需的最基本功能。它缺乏语法使得无法表达复杂的决策。</p>
+<p>相反，Ninja旨在与生成其输入文件的单独程序一起使用。生成器程序（如autotools项目中的./configure）可以分析系统依赖关系并尽可能多地做出决策，以便增量构建保持快速。.ninja文件生成器超越autotools，甚至构建时决定，比如“我应该使用哪个编译器标志？”或“我应该构建调试或发布模式二进制文件？”。</p>
+<h2 id="设计目标"><a href="#设计目标" class="headerlink" title="设计目标"></a>设计目标</h2><p>以下是Ninja的设计目标：</p>
+<ul>
+<li>即使对于非常大的项目，也可以非常快速（即即时）增量构建。</li>
+<li>关于如何构建代码的是策略很少。不同的项目和更高级别的构建系统对如何构建代码有不同的看法; 例如，应该在源代码旁边构建对象还是应该将所有构建输出放到一个单独的目录中？是否有一个“包”规则来构建项目的可分发包？通过尝试允许实施这些决策而不是选择来实现这些决定，即使这会导致更多的冗长。</li>
+<li>获取依正确的赖关系，特别是使用Makefile难以正确处理的情况（例如，输出需要对用于生成它们的命令行的隐式依赖;要构建C源代码，您需要使用gcc的-M标志来实现标头依赖性）。</li>
+<li>当方便和速度发生冲突时，请选择速度。</li>
+</ul>
+<p>一些明确的非目标：</p>
+<ul>
+<li>简约的语法, 更易于手动编写构建文件。你应该使用另一个程序生成你的Ninja文件。这就是我们如何回避许多政策决定。</li>
+<li>内置规则。 Ninja没有开箱即用的规则。如编译C代码。</li>
+<li>构建时自定义。生成Ninja文件的程序有自己的主张。</li>
+<li>构建时条件或路径搜索的决策能力。做决策很耗时。</li>
+</ul>
+<p>重申一下，Ninja比其他构建系统更快，因为它非常简单。在创建项目的.ninja文件时，您必须告诉Ninja到底要做什么。</p>
+<h2 id="与Make比较"><a href="#与Make比较" class="headerlink" title="与Make比较"></a>与Make比较</h2><p>Ninja在精神和功能上与Make最接近，依赖于文件时间戳之间的简单依赖关系。</p>
+<p>但从根本上说，make有很多功能：后缀规则，函数，内置规则，例如在构建源时搜索RCS文件。 Make的语言旨在由人类编写。许多项目发现单独使用Make足以解决构建问题。</p>
+<p>相比之下，Ninja几乎没有任何特性; 只有在做复杂的决策生成Ninja输入文件时保证构建正确这一条原则, Ninja不太可能适用于大多数项目。</p>
+<p>以下是Ninja为Make添加的一些功能。 （这些类型的功能通常可以使用更复杂的Makefile实现，但它们不是make本身的一部分。）</p>
+<pre><code>* Ninja特别支持在构建时发现额外的依赖项，从而可以轻松地使C / C ++代码的头依赖性正确。
+* 构建边可以具有多个输出。
+* 隐式输出取决于用于生成它们的命令行，这意味着更改(例如编译标志)将导致输出重建。
+* 在运行依赖它们的命令之前，始终隐式创建输出目录。
+* 规则可以提供正在运行的命令的简短描述，因此您可以打印例如构建时&quot;CC foo.o&quot;而不是长命令行。
+* 构建始终并行运行，默认情况下基于系统具有的CPU数量。未指定的构建依赖项将导致不正确的构建。
+* 命令输出始终是缓存的。这意味着并行运行的命令不会交错输出，当命令失败时，我们可以在产生故障的完整命令行旁边打印其故障输出。</code></pre><h2 id="使用Ninja进行项目"><a href="#使用Ninja进行项目" class="headerlink" title="使用Ninja进行项目"></a>使用Ninja进行项目</h2><p>Ninja目前在类Unix系统和Windows上工作。它在Linux上的测试次数最多（并且具有最佳性能），但它在Mac OS X和FreeBSD上依旧要以运行良好。</p>
+<p>如果你的项目很小，Ninja的速度影响可能不明显。 （但是，即使对于小型项目，有时也会发现Ninja的有限语法会强制更简单的构建规则，从而导致更快的构建。）另一种说法是，如果您对项目的编辑 - 编译周期时间感到满意，那么Ninja不会对你有用。</p>
+<p>还有许多其他构建系统比Ninja本身更加用户友好或功能强大。对于一些建议：Ninja作者发现<a href="http://gittup.org/tup/" target="_blank" rel="noopener">tup构建系统</a>对Ninja的设计有影响，并认为<a href="https://github.com/apenwarr/redo" target="_blank" rel="noopener">redo</a>的设计非常聪明。</p>
+<p>Ninja的好处来自于将它与更智能的元构建系统结合使用。</p>
+<p><a href="https://gn.googlesource.com/gn/" target="_blank" rel="noopener">GN</a></p>
+<pre><code>元构建系统用于为Google Chrome和相关项目（v8，node.js）以及Google Fuschia生成构建文件。 gn可以为Chrome支持的所有平台生成Ninja文件。</code></pre><p><a href="https://cmake.org/" target="_blank" rel="noopener">CMake</a></p>
+<pre><code>一种广泛使用的元构建系统，可以在CMake版本2.8.8上生成Linux上的Ninja文件。较新版本的CMake也支持在Windows和Mac OS X上生成Ninja文件。</code></pre><p><a href="https://github.com/ninja-build/ninja/wiki/List-of-generators-producing-ninja-build-files" target="_blank" rel="noopener">其他</a></p>
+<pre><code>Ninja应该完美地融入其他元构建软件，如 [premake](http://industriousone.com/premake) .如果您这样做，请告诉我们！</code></pre><h2 id="运行Ninja"><a href="#运行Ninja" class="headerlink" title="运行Ninja"></a>运行Ninja</h2><p>运行Ninja。默认情况下，它在当前目录中查找名为build.ninja的文件，并构建所有过时的目标。您可以指定要构建的目标（文件）作为命令行参数。</p>
+<p>还有一个特殊的语法目标^，用于将目标指定为某个规则的第一个输出，该规则包含您放入命令行的源（如果存在）。例如，如果您将target指定为foo.c^，那么将构建foo.o（假设您在构建文件中有这些目标）。</p>
+<p><code>ninja -h</code> 打印帮助输出。 Ninja的许多flags 故意与Make的flags 相匹配;例如<code>ninja -C build -j 20</code>更改到构建目录并并行运行20个构建命令。 （请注意，Ninja无论如何都默认并行运行命令，所以通常你不需要传递-j。）</p>
+<h2 id="环境变量"><a href="#环境变量" class="headerlink" title="环境变量"></a>环境变量</h2><p>Ninja支持一个环境变量来控制其行为：<code>NINJA_STATUS</code>，即在运行规则之前打印的进度状态。</p>
+<p>有几个可用的占位符：</p>
+<p><strong><em>%s</em></strong>        起始边缘数。<br><strong><em>%t</em></strong>        完成构建必须运行的边的总数。<br><strong><em>%p</em></strong>        起始边缘的百分比。<br><strong><em>%r</em></strong>        当前运行边缘的数量。<br><strong><em>%u</em></strong>        要启动的剩余边数。<br><strong><em>%F</em></strong>        完成边缘的数量。<br><strong><em>%o</em></strong>        每秒成品边缘的总速率<br><strong><em>%c</em></strong>        当前每秒完成边缘的速率（由-j指定的平均值或其默认值）<br><strong><em>%e</em></strong>        经过的时间以秒为单位。 （自Ninja 1.2起可用。）<br><strong><em>%%</em></strong>        一个普通的％字符。</p>
+<p>默认进度状态为<code>[%f/%t]</code>（请注意与构建规则分离的尾随空格）。另一个显示处理状态的例子可能是<code>[%u/%r/%f]</code>。</p>
+<h2 id="额外的工具"><a href="#额外的工具" class="headerlink" title="额外的工具"></a>额外的工具</h2><p>Ninja命令行上的 -t 标志运行了一些我们在Ninja开发过程中发现的有用的工具。目前这些工具是：</p>
+<p><strong><em>query</em></strong>            转储给定目标的输入和输出。</p>
+<p><strong><em>browse</em></strong>        在Web浏览器中浏览依赖关系图。单击文件会将视图聚焦在该文件上，显示输入和输出。</p>
+<pre><code>此功能需要安装Python。默认情况下，使用端口8000并打开Web浏览器。这可以更改如下：
+ninja -t browse --port = 8000 --no-browser mytarget</code></pre><p><strong><em>graph</em></strong>            以graphviz（一种自动图形布局工具）使用的语法输出文件。使用它像：</p>
+<pre><code>ninja -t graph mytarget | dot -Tpng -ograph.png
+在Ninja源代码树中，ninja graph.png为Ninja本身生成一个图像。如果没有给出目标，则为所有根目标生成图表。</code></pre><p><strong><em>target</em></strong>        按规则或深度输出目标列表。如果使用像ninja -t目标规则名称那么它将使用要构建的给定规则打印目标列表。</p>
+<pre><code>如果没有给出规则，则打印源文件（图形的叶子）。
+如果像ninja -t一样使用目标深度数字，它将以深度优先的方式打印目标列表，从根目标（没有输出的目标）开始。
+缩进用于标记依赖项。如果深度为零，则打印所有目标。如果没有提供参数，则假定ninja -t目标深度为1。
+在此模式下，可能会多次列出目标。
+如果像这样使用ninja -t target all它会打印所有可用的目标而不会缩进，并且它比深度模式更快。</code></pre><p><strong><em>command</em></strong>        给定一个目标列表，打印一个命令列表，如果按顺序执行，可以用来重建这些目标，假设所有输出文件都已过期。</p>
+<p><strong><em>clean</em></strong>            删除构建的文件。默认情况下，它会删除除生成器创建的文件之外的所有内置文件。</p>
+<pre><code>添加-g标志还会删除生成器创建的构建文件（请参阅generator属性的规则参考）。
+其他参数是目标，它删除给定目标并递归地为它们构建所有文件。
+如果像ninja -t clean -r规则一样使用它会删除使用给定规则构建的所有文件。
+未删除在图表中创建但未引用的文件。此工具考虑了-v和-n选项（请注意-n表示-v）。</code></pre><p><strong><em>compdb</em></strong>        给定一个规则列表，每个规则都应该是一个C系列语言编译器规则，</p>
+<pre><code>其第一个输入是源文件的名称，在标准输出上打印一个Clang工具接口所期望的JSON格式的编译数据库。自Ninja 1.2起可用。</code></pre><p><strong><em>deps</em></strong>            显示存储在.ninja_deps文件中的所有依赖项。给定目标时，只显示目标的依赖关系。自Ninja 1.4起可用。</p>
+<p><strong><em>recompact</em></strong>        重新压缩.ninja_deps文件。自Ninja 1.4起可用。</p>
+<h2 id="编写自己的Ninja文件"><a href="#编写自己的Ninja文件" class="headerlink" title="编写自己的Ninja文件"></a>编写自己的Ninja文件</h2><p>本手册的其余部分仅在您自己构建Ninja文件时才有用：例如，如果您正在编写元构建系统或支持新语言。</p>
+<h4 id="概念概述"><a href="#概念概述" class="headerlink" title="概念概述"></a>概念概述</h4><p>Ninja会评估文件之间依赖关系的图表，并根据文件修改时间确定运行构建目标所需的任何命令。如果你熟悉Make，Ninja非常相似。</p>
+<p>构建文件（默认名称：build.ninja）提供了一系列规则 - 较长命令的短名称，如如何运行编译器 - 以及构建语句列表，说明如何使用规则构建文件 - 应用哪个规则产生哪些产出的投入。</p>
+<p>从概念上讲，构建语句描述项目的依赖关系图，而规则语句描述如何沿图的给定边生成文件。</p>
+<h4 id="语法示例"><a href="#语法示例" class="headerlink" title="语法示例"></a>语法示例</h4><p>这是一个基本的.ninja文件，演示了大部分语法。它将用作以下部分的示例。</p>
+<pre><code>cflags = -Wall
+
+rule cc
+  command = gcc $ cflags -c $ in -o $ out
+
+build foo.o:cc foo.c</code></pre><h4 id="变量"><a href="#变量" class="headerlink" title="变量"></a>变量</h4><p>尽管为了保持构建文件的可读性（可调试性）不便于手写，但Ninja支持为字符串声明更短的可重用名称。如下声明</p>
+<pre><code>cflags = -g</code></pre><p>可以在等号的右侧使用，用美元符号取消引用它，如下所示：</p>
+<p>规则cc</p>
+<pre><code>command = gcc $cflags -c $in -o $out</code></pre><p>也可以使用像${in}这样的花括号来引用变量。</p>
+<p>变量最好被称为“绑定”，因为给定的变量不能被改变，只能被遮蔽。关于阴影如何在本文档后面工作的内容还有很多。</p>
+<h2 id="规则"><a href="#规则" class="headerlink" title="规则"></a>规则</h2><p>规则声明命令行的短名称。它们以包含rule关键字和规则名称的行开头。然后是一组缩进的variable = value行。</p>
+<p>上面的基本示例声明了一个名为cc的新规则以及要运行的命令。在规则的上下文中，命令变量定义要运行的命令，$ in扩展到输入文件列表（foo.c），$ out定义命令的输出文件（foo.o）。参考中提供了完整的特殊变量列表。</p>
+<p>构建语句<br>构建语句声明输入和输出文件之间的关系。它们以build关键字开头，并具有格式构建输出：rulename输入。这样的声明说所有输出文件都是从输入文件派生的。当输出文件丢失或输入发生变化时，Ninja将运行规则以重新生成输出。</p>
+<p>上面的基本示例描述了如何使用cc规则构建foo.o。</p>
+<p>在构建块的范围内（包括评估其关联规则），变量$ in是输入列表，变量$ out是输出列表。</p>
+<p>构建语句后面可能跟一组缩进的键=值对，就像规则一样。在评估命令中的变量时，这些变量将影响任何变量。例如：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">cflags &#x3D; -Wall -Werror</span><br><span class="line">rule cc</span><br><span class="line">  command &#x3D; gcc $cflags -c $in -o $out</span><br><span class="line"></span><br><span class="line">＃If left unspcified, builds get the other $cflags.</span><br><span class="line">build foo.o:cc foo.c</span><br><span class="line"></span><br><span class="line">＃But you can shadow variables like cflags for a particular build.</span><br><span class="line">build special.o:cc special.c</span><br><span class="line">  cflags &#x3D; -Wall</span><br><span class="line"></span><br><span class="line">＃The variable was only shadowed for the scope of special.o</span><br><span class="line">＃Subsequent build lines get the outer (original) cflags.</span><br><span class="line">build bar.o:cc bar.c</span><br></pre></td></tr></table></figure>
+
+<p>有关范围界定的更多讨论，请参阅参考资料。</p>
+<p>如果您需要从构建语句传递给规则的更复杂信息（例如，如果规则需要“第一个输入的文件扩展名”），请将其作为额外变量传递，如上面传递cflags的方式。</p>
+<p>如果顶级Ninja文件被指定为任何构建语句的输出并且它已过期，Ninja将在构建用户请求的目标之前重建并重新加载它。</p>
+<p>从代码生成Ninja文件<br>Ninja发行版中的misc / ninja_syntax.py是一个很小的Python模块，可以帮助生成Ninja文件。它允许你像ninja.rule（name =’foo’，command =’bar’，depfile =’$ out.d’）进行Python调用，它会生成相应的语法。如果它有用，请随意将其内联到项目的构建系统中。</p>
+<p>更多细节<br>虚假的规则<br>特殊规则名称phony可用于为其他目标创建别名。例如：</p>
+<p>build foo：phony some / file / in / a / faraway / subdir / foo<br>这使得ninja foo构建了更长的路径。从语义上讲，虚假规则相当于一个简单的规则，其中命令什么也不做，但虚假规则是专门处理的，因为它们在运行，记录时没有打印（见下文），也没有对作为部分打印的命令计数做出贡献构建过程。</p>
+<p>phony还可用于为在构建时可能不存在的文件创建虚拟目标。如果编写的假构建语句没有任何依赖关系，则如果目标不存在，则该目标将被视为过期。</p>
+<p>默认目标语句<br>默认情况下，如果在命令行中未指定目标，Ninja将构建未在其他位置命名为输入的每个输出。您可以使用默认目标语句覆盖此行为。如果在命令行中未指定任何输出文件，则默认目标语句会使Ninja仅构建给定的输出文件子集。</p>
+<p>默认目标语句以default关键字开头，格式为默认目标。默认目标语句必须出现在将目标声明为输出文件的构建语句之后。它们是累积的，因此可以使用多个语句来扩展默认目标列表。例如：</p>
+<p>默认foo吧<br>默认巴兹<br>这会导致Ninja默认构建foo，bar和baz目标。</p>
+<p>Ninja 日志<br>对于每个构建的文件，Ninja会记录用于构建它的命令。使用此日志Ninja可以知道何时使用与构建文件指定的命令行不同的命令行构建现有输出（即，命令行已更改）并且知道重建文件。</p>
+<p>日志文件保存在名为.ninja_log的文件的构建根目录中。如果在最外层范围内提供名为builddir的变量，则.ninja_log将保留在该目录中。</p>
+<p>版本兼容性<br>自Ninja 1.2起可用。</p>
+<p>Ninja版本标签遵循标准major.minor.patch格式，其中主要版本在向后不兼容的语法/行为更改上增加，而次要版本在新行为上增加。您的build.ninja可能会声明一个名为ninja_required_version的变量，该变量断言使用生成的文件所需的最小Ninja版本。例如，</p>
+<p>ninja_required_version = 1.1<br>声明构建文件依赖于Ninja 1.1中引入的某些功能（可能是池语法），并且必须使用Ninja 1.1或更高版本来构建。与其他Ninja变量不同，在解析中遇到变量时会立即检查此版本要求，因此最好将其置于构建文件的顶部。</p>
+<p>Ninja总是警告Ninja和ninja_required_version的主要版本是否不匹配;尚未出现主要版本更改，因此很难预测可能需要的行为。</p>
+<p>C / C ++头依赖项<br>要获得C / C ++标头依赖项（或以类似方式工作的任何其他构建依赖项），正确的Ninja具有一些额外的功能。</p>
+<p>标头的问题是，给定源文件所依赖的文件的完整列表只能由编译器发现：不同的预处理器定义和包含路径会导致使用不同的文件。一些编译器可以在构建时发出这些信息，Ninja可以使用它来完善其依赖关系。</p>
+<p>考虑一下：如果文件从未被编译过，那么它必须构建，生成头部依赖关系作为副作用。如果稍后修改了任何文件（即使以更改它所依赖的标头的方式），修改也将导致重建，使依赖关系保持最新。</p>
+<p>在加载这些特殊依赖项时，Ninja会隐式添加额外的构建边，以便在缺少列出的依赖项时不会出错。这允许您删除头文件并重建，而不会因缺少输入而导致构建中止。</p>
+<p>depfile<br>gcc（以及像clang这样的其他编译器）支持在Makefile的语法中发出依赖性信息。 （可以使用任何可以在此表单中编写依赖项的命令，而不仅仅是gcc。）</p>
+<p>将这些信息带入忍者需要合作。在Ninja端，构建中的depfile属性必须指向写入此数据的路径。 （Ninja只支持编译器发出的Makefile语法的有限子集。）然后命令必须知道将依赖项写入depfile路径。像下例中一样使用它：</p>
+<p>规则cc<br>  depfile = $ out.d<br>  command = gcc -MMD -MF $ out.d [其他gcc标志]<br>gcc的-MMD标志告诉它输出标头依赖项，-MF标志告诉它写入它们的位置。</p>
+<p>DEPS<br>（自Ninja 1.3起可用。）</p>
+<p>事实证明，对于大型项目（特别是在Windows上，文件系统很慢），在启动时加载这些依赖项文件的速度很慢。</p>
+<p>Ninja 1.3可以在生成后立即处理依赖关系，并在Ninja内部数据库中保存相同信息的压缩形式。</p>
+<p>忍者以两种形式支持这种处理。</p>
+<p>deps = gcc指定该工具以Makefile的形式输出gcc样式的依赖项。将此添加到上面的示例将导致Ninja在编译完成后立即处理depfile，然后删除.d文件（仅用作临时文件）。<br>deps = msvc指定该工具以Visual Studio的编译器/ showIncludes标志生成的形式输出标头依赖项。简而言之，这意味着该工具将特殊格式的行输出到其标准输出。 Ninja然后从显示的输出中过滤这些行。不需要depfile属性，但是前面的本地化字符串</p>
+<p>池<br>自Ninja 1.1起可用。</p>
+<p>池允许您为有限数量的并发作业分配一个或多个规则或边缘，这些作业比默认并行性受到更严格的限制。</p>
+<p>例如，这可以用于限制特定昂贵的规则（如巨大可执行文件的链接步骤），或限制特定的构建语句，这些语句在并发运行时表现不佳。</p>
+<p>每个池都有一个深度变量，该变量在构建文件中指定。然后，在规则或构建语句中使用池变量引用池。</p>
+<p>无论您指定哪个池，ninja都不会运行比默认并行运行更多的并发作业，也不会运行命令行上指定的作业数（使用-j）。</p>
+<p>＃一次不超过4个链接。<br>pool link_pool<br>  深度= 4</p>
+<p>＃一次不超过1个重物。<br>pool heavy_object_pool<br>  深度= 1</p>
+<p>规则链接<br>  …<br>  pool = link_pool</p>
+<p>规则cc<br>  …</p>
+<p>＃这里使用了link_pool。只有4个链接可以同时运行。<br>build foo.exe：link input.obj</p>
+<p>＃通过设置一个构建语句可以免除其规则池<br>＃空池。这有效地将构建语句放回默认值<br>#pool，它具有无限深度。<br>build other.exe：link input.obj<br>  pool =</p>
+<p>#build语句可以直接指定池。<br>＃这些构建中只有一个会一次运行。<br>build heavy_object1.obj：cc heavy_obj1.cc<br>  pool = heavy_object_pool<br>build heavy_object2.obj：cc heavy_obj2.cc<br>  pool = heavy_object_pool<br>控制台池<br>自Ninja 1.5起可用。</p>
+<p>存在一个名为console的预定义池，深度为1.它具有特殊属性，池中的任何任务都可以直接访问提供给Ninja的标准输入，输出和错误流，通常连接到用户的控制台（因此得名）但可以重定向。这对于在控制台上生成状态更新的交互式任务或长时间运行的任务（例如测试套件）非常有用。</p>
+<p>当控制台池中的任务正在运行时，Ninja的常规输出（例如进度状态和并发任务的输出）将被缓冲，直到完成为止。</p>
+<p>忍者文件参考<br>文件是一系列声明。声明可以是以下之一：</p>
+<p>规则声明，以规则rulename开头，然后有一系列定义变量的缩进行。<br>构建边，看起来像构建output1 output2：rulename input1 input2。隐式依赖关系最终可以用|来加强dependency1 dependency2。最终可以使用||添加仅订单依赖项dependency1 dependency2。 （请参阅有关依赖类型的参考。）</p>
+<p>可以在：with |之前添加隐式输出（自Ninja 1.7以来可用） output1 output2并不出现在$ out中。 （参见输出类型的参考。）</p>
+<p>变量声明，看起来像variable = value。<br>默认目标语句，看起来像默认target1 target2。<br>引用更多文件，看起来像subninja路径或包含路径。下面在关于范围界定的讨论中解释了这些之间的差异。<br>池声明，看起来像池poolname。池中有关池的解释。<br>词法语法<br>Ninja主要编码不可知，只要Ninja关心的字节（如路径中的斜线）是ASCII。这意味着例如UTF-8或ISO-8859-1输入文件应该可以工作。</p>
+<p>注释以＃开头并延伸到行尾。</p>
+<p>换行很重要。像build foo bar这样的语句是一组以换行符结尾的空格分隔标记。必须转义令牌中的换行符和空格。</p>
+<p>只有一个转义字符$，它具有以下行为：</p>
+<p>$后跟换行符<br>转义换行符（在换行符中继续当前行）。<br>$后跟文字<br>变量引用。<br>$ {VARNAME}<br>$ varname的替代语法。<br>$后跟空格<br>空间。 （这仅在路径列表中是必需的，否则空格将分隔文件名。请参阅下文。）<br>$：<br>一个冒号。 （这只在构建行中是必需的，否则冒号会终止输出列表。）<br>$$<br>文字$。</p>
+<p>首先将构建或默认语句解析为以空格分隔的文件名列表，然后展开每个名称。这意味着变量中的空格将在扩展文件名中产生空格。</p>
+<p>spacing = foo bar<br>build $ spaced / baz其他$ file：…<br>＃上面的构建行有两个输出：“foo bar / baz”和“other file”。<br>在name = value语句中，始终剥离值开头的空格。在行连续之后的行开头处的空格也被剥离。</p>
+<p>two_words_with_one_space = foo $<br>    酒吧<br>one_word_with_no_space = foo $<br>    酒吧<br>其他空格只有在一行的开头才有意义。如果一条线的缩进比前一条线多，则它被视为其父级范围的一部分;如果缩进小于前一个，则关闭前一个范围。</p>
+<p>顶级变量<br>在最外层文件范围中声明时，两个变量很重要。</p>
+<p>builddir<br>一些Ninja输出文件的目录。请参阅构建日志的讨论。 （您还可以在此目录中存储其他构建输出。）<br>ninja_required_version<br>正确处理构建所需的最小忍者版本。请参阅版本控制的讨论。<br>规则变量<br>规则块包含影响规则处理的key = value声明列表。以下是特殊键的完整列表。</p>
+<p>命令（必填）<br>要运行的命令行。每个规则可能只有一个命令声明。有关引用和执行多个命令的更多详细信息，请参阅下一节。<br>depfile<br>包含额外隐式依赖项的可选Makefile的路径（请参阅有关依赖项类型的参考）。这显然是为了支持C / C ++头依赖关系;看到完整的讨论。<br>DEPS<br>（自Ninja 1.3以来可用。）如果存在，必须是gcc或msvc中的一个来指定特殊的依赖处理。请参阅完整的讨论。生成的数据库在builddir中存储为.ninja_deps，请参阅builddir的讨论。<br>msvc_deps_prefix<br>（从Ninja 1.5开始可用。）定义应从msvc的/ showIncludes输出中删除的字符串。仅在deps = msvc且未使用英语Visual Studio版本时才需要。<br>描述<br>命令的简短描述，用于在命令运行时对其进行漂亮打印。 -v标志控制是否打印完整命令或其描述;如果命令失败，将在命令输出之前始终打印完整的命令行。<br>发电机<br>如果存在，则指定此规则用于重新调用生成器程序。使用生成器规则构建的文件有两种特殊处理方式：首先，如果命令行发生变化，则不会重建它们。其次，默认情况下不会清理它们。<br>在<br>以空格分隔的文件列表，作为引用此规则的构建行的输入提供，如果它出现在命令中，则引用shell引用。 （$ in仅为方便起见而提供;如果您需要此文件列表的某个子集或变体，只需使用该列表构造一个新变量并使用该变量。）<br>in_newline<br>与$ in相同，除了多个输入由换行而不是空格分隔。 （与$ rspfile_content一起使用;这适用于MSVC链接器中的一个错误，它使用固定大小的缓冲区来处理输入。）<br>出<br>以空格分隔的文件列表作为输出提供给引用此规则的构建行，如果它出现在命令中，则引用shell引用。<br>restat<br>如果存在，则使Ninja在执行命令后重新统计命令的输出。命令未更改的修改时间的每个输出都将被视为从未需要构建。这可能会导致输出的反向依赖性从挂起的构建操作列表中删除。<br>rspfile，rspfile_content<br>如果存在（两者），Ninja将使用给定命令的响应文件，即在调用命令之前将所选字符串（rspfile_content）写入给定文件（rspfile）并在成功执行命令后删除文件。</p>
+<p>这在Windows操作系统上特别有用，其中命令行的最大长度是有限的，必须使用响应文件。</p>
+<p>像下例中一样使用它：</p>
+<p>规则链接<br>  command = link.exe / OUT $ out [这里通常的链接标志] @ $ out.rsp<br>  rspfile = $ out.rsp<br>  rspfile_content = $ in</p>
+<p>构建myapp.exe：链接a.obj b.obj [可能还有很多其他.obj文件]<br>解释命令变量<br>从根本上说，命令行在Unix和Windows上的表现不同。</p>
+<p>在Unix上，命令是参数数组。 Ninja命令变量直接传递给sh -c，后者负责将该字符串解释为argv数组。因此引用规则是shell的引用规则，您可以使用所有正常的shell运算符，例如&amp;&amp;来链接多个命令，或者使用VAR = value cmd来设置环境变量。</p>
+<p>在Windows上，命令是字符串，因此Ninja将命令字符串直接传递给CreateProcess。 （在简单执行编译器的常见情况下，这意味着开销较少。）因此，引用规则由被调用程序决定，在Windows上通常由C库提供。如果需要命令的shell解释（例如使用&amp;&amp;链接多个命令），请通过在命令前添加cmd / c来使命令执行Windows shell。 Ninja可能会出现“无效参数”错误，通常表示已超出命令行长度。</p>
+<p>建立产出<br>有两种类型的构建输出略有不同。</p>
+<p>显式输出，如构建行中所列。这些可用作规则中的$ out变量。</p>
+<p>这是用于例如输出的标准输出形式。编译命令的目标文件。</p>
+<p>隐含输出，在构造行中列出，语法为|在构建线之前的out1 out2 +（从Ninja 1.7开始可用）。语义与显式输出相同，唯一的区别是隐式输出不会出现在$ out变量中。</p>
+<p>这用于表示未在命令的命令行上显示的输出。</p>
+<p>构建依赖项<br>有三种类型的构建依赖项略有不同。</p>
+<p>显式依赖项，如构建行中所列。这些可用作规则中的$ in变量。这些文件中的更改会导致重建输出;如果这些文件丢失且Ninja不知道如何构建它们，则构建将中止。</p>
+<p>这是要使用的标准依赖形式，例如用于编译命令的源文件。</p>
+<p>隐式依赖关系，可以从规则的depfile属性中获取，也可以从语法中获取dep1 dep2位于构建行的末尾。语义与显式依赖项相同，唯一的区别是隐式依赖项不会显示在$ in变量中。</p>
+<p>这用于表示未在命令的命令行上显示的依赖项;例如，对于运行脚本的规则，脚本本身应该是隐式依赖项，因为对脚本的更改应该导致输出重建。</p>
+<p>请注意，通过depfiles加载的依赖关系具有稍微不同的语义，如规则参考中所述。</p>
+<p>仅使用顺序的依赖关系，用语法||表示dep1 dep2位于构建行的末尾。当它们过时时，输出在构建之前不会重建，但仅依赖于顺序的依赖项的更改不会导致重建输出。</p>
+<p>仅订单依赖项对于仅在构建期间发现的引导依赖项非常有用：例如，在开始后续编译步骤之前生成头文件。 （在编译中使用标头后，生成的依赖文件将表示隐式依赖项。）</p>
+<p>文件路径按原样进行比较，这意味着Ninja认为指向同一文件的绝对路径和相对路径是不同的。</p>
+<p>可变扩展<br>变量在路径（在构建或默认语句中）和name = value语句的右侧进行扩展。</p>
+<p>当评估name = value语句时，它的右侧会立即展开（根据下面的作用域规则），从那时起$ name会扩展为静态字符串作为扩展的结果。从来没有这种情况你需要“双重转义”一个值来防止它被扩展两次。</p>
+<p>所有变量在解析时都会立即展开，但有一个重要的例外：规则块中的变量在使用规则时会扩展，而不是在声明规则时。在以下示例中，演示规则打印“这是条形图的演示”。</p>
+<p>规则演示<br>  command = echo“这是$ foo的演示”</p>
+<p>构建：演示<br>  foo =吧</p>
+<p>评估和范围<br>顶级变量声明的范围限定在它们出现的文件中。</p>
+<p>规则声明的范围也限定在它们出现的文件中。（从Ninja 1.6开始可用）</p>
+<p>subninja关键字用于包含另一个.ninja文件，它引入了一个新的范围。包含的subninja文件可以使用父文件中的变量和规则，并为文件的作用域隐藏它们的值，但不会影响父文件中变量的值。</p>
+<p>要在当前作用域中包含另一个.ninja文件，就像C #include语句一样，请使用include而不是subninja。</p>
+<p>构建块中缩进的变量声明的范围限定为构建块。在构建块（或规则是使用）中展开的变量的完整查找顺序是：</p>
+<p>特殊的内置变量（$ in，$ out）。<br>构建块中的构建级变量。<br>规则块中的规则级变量（即$ command）。 （请注意上面关于扩展的讨论，这些讨论是“延迟”扩展的，并且可以使用像in in这样的范围内绑定。）<br>来自构建行所在文件的文件级变量。<br>使用subninja关键字包含该文件的文件中的变量。</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/rom/" rel="tag"># rom</a>
+              <a href="/tags/ninja/" rel="tag"># ninja</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2019/08/02/android/rom/Port_Android_To_Your_Device_translate/" rel="prev" title="(译)如何移植 CyanogenOS/LineageOS 到您自己的手机">
+      <i class="fa fa-chevron-left"></i> (译)如何移植 CyanogenOS/LineageOS 到您自己的手机
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2019/08/15/android/rom/FAQs_about_build_custom_roms/" rel="next" title="(转)定制ROM -- 常见问题及编译错误">
+      (转)定制ROM -- 常见问题及编译错误 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#介绍"><span class="nav-number">1.</span> <span class="nav-text">介绍</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#哲学概述"><span class="nav-number">2.</span> <span class="nav-text">哲学概述</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#设计目标"><span class="nav-number">3.</span> <span class="nav-text">设计目标</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#与Make比较"><span class="nav-number">4.</span> <span class="nav-text">与Make比较</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#使用Ninja进行项目"><span class="nav-number">5.</span> <span class="nav-text">使用Ninja进行项目</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#运行Ninja"><span class="nav-number">6.</span> <span class="nav-text">运行Ninja</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#环境变量"><span class="nav-number">7.</span> <span class="nav-text">环境变量</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#额外的工具"><span class="nav-number">8.</span> <span class="nav-text">额外的工具</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#编写自己的Ninja文件"><span class="nav-number">9.</span> <span class="nav-text">编写自己的Ninja文件</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#概念概述"><span class="nav-number">9.0.1.</span> <span class="nav-text">概念概述</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#语法示例"><span class="nav-number">9.0.2.</span> <span class="nav-text">语法示例</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#变量"><span class="nav-number">9.0.3.</span> <span class="nav-text">变量</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#规则"><span class="nav-number">10.</span> <span class="nav-text">规则</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Sophimp"
+      src="/images/avatar.png">
+  <p class="site-author-name" itemprop="name">Sophimp</p>
+  <div class="site-description" itemprop="description">A dream begin</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">87</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+        <span class="site-state-item-count">20</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+        <span class="site-state-item-count">90</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/sophimp" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;sophimp" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:sophimp2020@126.com" title="E-Mail → mailto:sophimp2020@126.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Sophimp</span>
+</div>
+
+<!--
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a>
+  </div>
+-->
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="Total Visitors">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="Total Views">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

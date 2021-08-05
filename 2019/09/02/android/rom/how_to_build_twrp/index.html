@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+  <link rel="stylesheet" href="/lib/pace/pace-theme-minimal.min.css">
+  <script src="/lib/pace/pace.min.js"></script>
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"sophimp.gitee.io","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="编译twrp 的步骤与aosp大同小异，在此基础上自定义recovery,便于刷机。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="(译) 如何编译 TWRP recovery">
+<meta property="og:url" content="http://sophimp.gitee.io/2019/09/02/android/rom/how_to_build_twrp/index.html">
+<meta property="og:site_name" content="Sophimp&#39;s Space">
+<meta property="og:description" content="编译twrp 的步骤与aosp大同小异，在此基础上自定义recovery,便于刷机。">
+<meta property="article:published_time" content="2019-09-02T14:03:50.000Z">
+<meta property="article:modified_time" content="2021-03-15T03:49:47.928Z">
+<meta property="article:author" content="Sophimp">
+<meta property="article:tag" content="ROM">
+<meta property="article:tag" content="TWRP">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="http://sophimp.gitee.io/2019/09/02/android/rom/how_to_build_twrp/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-Hans'
+  };
+</script>
+
+  <title>(译) 如何编译 TWRP recovery | Sophimp's Space</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+	
+	<script type="text/javascript" src="//cdn.bootcss.com/canvas-nest.js/1.0.0/canvas-nest.min.js"></script>
+	
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Sophimp's Space</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">coding & thinking</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+  <a href="https://github.com/sophimp" class="github-corner" title="Follow me on GitHub" aria-label="Follow me on GitHub" rel="noopener" target="_blank"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
+    <link itemprop="mainEntityOfPage" href="http://sophimp.gitee.io/2019/09/02/android/rom/how_to_build_twrp/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.png">
+      <meta itemprop="name" content="Sophimp">
+      <meta itemprop="description" content="A dream begin">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Sophimp's Space">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          (译) 如何编译 TWRP recovery
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2019-09-02 22:03:50" itemprop="dateCreated datePublished" datetime="2019-09-02T22:03:50+08:00">2019-09-02</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2021-03-15 11:49:47" itemprop="dateModified" datetime="2021-03-15T11:49:47+08:00">2021-03-15</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Android/" itemprop="url" rel="index"><span itemprop="name">Android</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="Views" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">Views: </span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span>
+            <div class="post-description">编译twrp 的步骤与aosp大同小异，在此基础上自定义recovery,便于刷机。</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p><a href="https://forum.xda-developers.com/showthread.php?t=1943625" target="_blank" rel="noopener">原文: How to compile TWRP touch recovery</a></p>
+<p>所有 TWRP 3.x 源码都是公开的。您可以自行编译它。本指南不会是一步一步、逐字逐句的的指南。如果您不熟悉基本的 Linux 命令和/或 AOSP 项目的构建，则可能操作不了此教程. </p>
+<p>您当前可以使用 Omni 5.1、Omni 6.0、Omni 7.1、Omni 8.1、CM 12.1、CM 13.0、CM 14.1 或 CM 15.1 源代码。建议使用 Omni 7.1。您可以在 CM 中构建，但可能会遇到一些小问题。如果您不知道如何修复文件问题，则应选择使用 Omni。</p>
+<p>如果使用 CM，则需要将 TWRP 放在 CM/bootable/recovery-twrp 文件夹中，并在BoardConfig.mk文件中设置<code>RECOVERY_VARIANT := twrp</code>。TWRP 源代码可在此处找到：</p>
+<p><a href="https://github.com/omnirom/android_bootable_recovery" target="_blank" rel="noopener">https://github.com/omnirom/android_bootable_recovery</a> </p>
+<p>选择最新的可用分支。Omni 不需要此步骤，因为 Omni 默认已包含 TWRP 源，但是，如果您使用的是旧版本的 Omni，则可能需要从最新分支中提取（最新的分支将在较旧的生成树中成功编译）</p>
+<p>如果您只对构建 TWRP 感兴趣，则可能需要尝试使用较小的树。您可以尝试使用此清单。它在大多数情况下应该工作，但在某些情况下，您可能需要更多的存储库在您的树比此清单提供：<br><a href="https://github.com/minimal-manifest-twrp" target="_blank" rel="noopener">https://github.com/minimal-manifest-twrp</a></p>
+<h2 id="编译前"><a href="#编译前" class="headerlink" title="编译前"></a>编译前</h2><p>注意：如果添加或更改任何标志，则需要在重新编译之前进行清理或进行破坏，否则不会生效标志更改。</p>
+<p>现在，您已经拥有了源代码，您需要为设备设置或更改一些生成标志。查找设备BoardConfig.mk。BoardConfig.mk位于您的device/vendor/device_comobo（例如device/lge/hammerhead/BoardConfig.mk）。</p>
+<p>您的主板配置需要包括体系结构和平台设置。通常，如果您使用的是其他人创建的设备配置，则这些配置已包含在内，但如果您创建自己的配置，则可能需要添加它们。没有它们，恢复可能会在启动过程中出现故障，您只会在屏幕上一遍又一遍地看到 Teamwin 标语闪烁。</p>
+<p>我们通常将所有标志放在BoardConfig.mk的底部，标题是#twrp对于您需要告诉 TWRP 使用什么主题的所有设备。此 TW_THEME 标志将替换默认的<code>DEVICE_RESOLUTION</code>标志。TWRP 现在使用缩放来拉伸任何主题以适合屏幕分辨率。目前有 5 个设置：纵向_hdpi、纵向_mdpi、横向_hdpi、横向_mdpi 和 watch_mdpi。对于纵向，您可能应该为 720x1280 及更高分辨率的分辨率选择 hdpi 主题。对于横向设备，请使用 1280x720 或更高的 hdpi 主题。<br><code>TW_THEME := portrait_hdpi</code></p>
+<p>请注意，主题不支持旋转 90 度，并且当前没有旋转主题的选项。如果您发现触摸屏相对于屏幕旋转，则可以使用一些标志（本指南稍后将讨论）来旋转触摸输入以匹配屏幕的方向。</p>
+<p>除了分辨率之外，我们还具有以下构建标志：</p>
+<p><code>RECOVERY_SDCARD_ON_DATA := true</code> – 这允许设备上 /data/media 用来存储（大多数蜂窝和最初随 ICS 附带的设备，如 Galaxy Nexus），但是，这些类型的设备已经不需要此标志。如果您未定义此标志，并且在fstab 文件中不包含对 /sdcard、/internal_sd、/internal_sdcard 或 /emmc 的任何引用，则我们将自动假定设备正在使用模拟存储。</p>
+<p><code>BOARD_HAS_NO_REAL_SDCARD := true</code> – 禁用 Sdcard 分区等操作，如果 TWRP 不适合您的恢复设置，可能会为您节省一些空间</p>
+<p><code>TW_NO_BATT_RECENT := true</code> – 禁用未正确支持电池的设备的电池百分比显示</p>
+<p><code>TW_CUSTOM_POWER_BUTTON ：= 107</code>– 自定义电源按钮映射锁屏操作</p>
+<p><code>TW_NO_REBOOT_BOOTLOADER := true</code>– 移除菜单中的 重启到bootloader 选项<br><code>TW_NO_REBOOT_RECOVERY := true</code>– 移除菜单中的 重启到 recovery 选项<br><code>RECOVERY_TOUCHSCREEN_SWAP_XY := true</code>– 交换xy轴的触摸映射<br><code>RECOVERY_TOUCHSCREEN_FLIP_Y := true</code>– 翻转y轴 触摸坐标<br><code>RECOVERY_TOUCHSCREEN_FLIP_X := true</code>– 翻转x轴 触摸坐标</p>
+<p><code>TWRP_EVENT_LOGGING := true</code> – 启用触摸事件日志记录以帮助调试触摸屏问题（不要将其留待发布 - 它会非常快速地填满您的日志文件）<br><code>BOARD_HAS_FLIPPED_SCREEN := true</code> – 翻转屏幕, 用到倒置安装的屏幕</p>
+<p>通过扫描recovery-twrp源码中的Android.mk文件，还可以找到其他构建标志。大多数其他构建标志不经常使用，因此我不会在这里记录它们。</p>
+<h2 id="recovery-fstab"><a href="#recovery-fstab" class="headerlink" title="recovery.fstab"></a><em>recovery.fstab</em></h2><p>TWRP 2.5 及更高版本支持一些新的recovery.fstab 功能，可用于扩展 TWRP 的备份/恢复功能。您不必添加 fstab 标志，因为大多数分区都是自动处理的。</p>
+<p>请注意，TWRP 仅在版本 3.2.0 和更高版本中支持 v2 fstab。您仍然需要为较旧的 TWRP 使用 fstab 的”旧”格式（该格式的示例如下），甚至 TWRP 3.2.0 也仍然支持 v1 格式以及 v2 格式。为了最大化 TWRP 与生成树的兼容性，您可以创建 twrp.fstab，并使用 PRODUCT_COPY_FILES 将文件放在 /etc/twrp.fstab 中当 TWRP 启动时，如果它在 ramdisk 中找到一个 twrp.fstab，它将重命名 /etc/fstab 到 /etc/恢复.fstab.bak，然后重命名 /etc/twrp.fstab 到 /etc/恢复.fstab.实际上，这将”替换”设备文件随 TWRP fstab 一起提供 fstab 2 文件，允许您在设备文件和其他恢复中保持兼容性。</p>
+<p>代码：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">PRODUCT_COPY_FILES +&#x3D; device&#x2F;lge&#x2F;hammerhead&#x2F;twrp.fstab:recovery&#x2F;root&#x2F;etc&#x2F;twrp.fstab</span><br></pre></td></tr></table></figure>
+
+<p>TWRP 中的 fstab 可以包含 fstab 中列出的每个分区的一些”标志”。</p>
+<p>下面是一个用于银河 S4 的 TWRP fstab 示例，我们将用于参考：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;boot       emmc        &#x2F;dev&#x2F;block&#x2F;platform&#x2F;msm_sdcc.1&#x2F;by-name&#x2F;boot</span><br><span class="line">&#x2F;system     ext4        &#x2F;dev&#x2F;block&#x2F;platform&#x2F;msm_sdcc.1&#x2F;by-name&#x2F;system</span><br><span class="line">&#x2F;data       ext4        &#x2F;dev&#x2F;block&#x2F;platform&#x2F;msm_sdcc.1&#x2F;by-name&#x2F;userdata length&#x3D;-16384</span><br><span class="line">&#x2F;cache      ext4        &#x2F;dev&#x2F;block&#x2F;platform&#x2F;msm_sdcc.1&#x2F;by-name&#x2F;cache</span><br><span class="line">&#x2F;recovery   emmc        &#x2F;dev&#x2F;block&#x2F;platform&#x2F;msm_sdcc.1&#x2F;by-name&#x2F;recovery</span><br><span class="line">&#x2F;efs        ext4        &#x2F;dev&#x2F;block&#x2F;platform&#x2F;msm_sdcc.1&#x2F;by-name&#x2F;efs                            flags&#x3D;display&#x3D;&quot;EFS&quot;;backup&#x3D;1</span><br><span class="line">&#x2F;external_sd     vfat       &#x2F;dev&#x2F;block&#x2F;mmcblk1p1    &#x2F;dev&#x2F;block&#x2F;mmcblk1   flags&#x3D;display&#x3D;&quot;Micro SDcard&quot;;storage;wipeingui;removable</span><br><span class="line">&#x2F;usb-otg         vfat       &#x2F;dev&#x2F;block&#x2F;sda1         &#x2F;dev&#x2F;block&#x2F;sda       flags&#x3D;display&#x3D;&quot;USB-OTG&quot;;storage;wipeingui;removable</span><br><span class="line">&#x2F;preload    ext4        &#x2F;dev&#x2F;block&#x2F;platform&#x2F;msm_sdcc.1&#x2F;by-name&#x2F;hidden                            flags&#x3D;display&#x3D;&quot;Preload&quot;;wipeingui;backup&#x3D;1</span><br><span class="line">&#x2F;modem      ext4        &#x2F;dev&#x2F;block&#x2F;platform&#x2F;msm_sdcc.1&#x2F;by-name&#x2F;apnhlos</span><br><span class="line">&#x2F;mdm		emmc		&#x2F;dev&#x2F;block&#x2F;platform&#x2F;msm_sdcc.1&#x2F;by-name&#x2F;mdm</span><br><span class="line">&#96;&#96;&#96; </span><br><span class="line"></span><br><span class="line">标志将添加到由空格分隔的 fstab 中的分区列表的末尾（空格或制表正常）。标志仅影响该分区，而不影响任何其他分区。标志用分号分隔。如果显示名称要具有空格，则必须用引号包围显示名称。</span><br><span class="line"></span><br><span class="line">&#96;&#96;&#96; fstab </span><br><span class="line">&#x2F;external_sd  vfat  &#x2F;dev&#x2F;block&#x2F;mmcblk1p1  flags&#x3D;display&#x3D;&quot;Micro SDcard&quot;;storage;wipeingui;removable</span><br></pre></td></tr></table></figure>
+<p>此分区的标志为它提供了一个显示名称的”微型 SDcard”，该名称会向用户显示。擦除使此分区可用于在高级擦除菜单中擦除。removable标志指示有时此分区可能不存在，以防止在启动期间显示安装错误。下面是标志的完整列表：</p>
+<pre><code>`removable` -- 指示分区可能不存在，以防止在引导过程中显示安装错误
+`storage` -- 指示分区可用作存储，使分区可用作备份、还原、zip 安装等存储。
+`settingsstorage` -- 只应将一个分区设置为设置存储，此分区用作存储 TWRP 设置文件的位置
+`canbewiped` -- 指示分区可以由后端系统擦除，但可能不会在 GUI 中列出供用户擦除
+`userrmrf` -- 覆盖正常格式类型的擦除，并且仅允许使用 rm -rf 命令擦除分区
+`backup=`  -- 必须由等于符号继承，因此 backup=1 或 backup=0， 1 指示分区可以列在备份/还原列表中，而 0 可确保此分区不会显示在备份列表中。
+`wipeingui` - 使分区显示在 GUI 中，以允许用户选择它进行擦除的高级擦除菜单
+`wipeduringfactoryreset` -- 分区将在恢复出厂设置期间擦除
+
+`ignoreblkid` -- blkid用于确定 TWRP 正在使用的文件系统，此标志将导致 TWRP 跳过/忽略 blkid 的结果，并仅使用 fstab 中指定的文件系统
+`retainlayoutversion` -- 使 TWRP 在 /data 中保留 .layoutversion 文件，如索尼 Xperia S 等设备使用 /data/media，但仍有单独的 /sdcard 分区
+`symlink=` -- 导致 TWRP 在安装分区时运行额外的装载命令，通常与 /data/media 一起使用以创建 /sdcard
+`display=` -- 为在 GUI 中列出分区设置显示名称
+`storagename` -- 为分区设置存储名称，以便列在 GUI 存储列表中
+`backupname=` -- 为分区设置备份名称，以便列在 GUI 备份/还原列表中
+`length=` - 通常用于在 /data 分区末尾保留空白空间，以在 Android 的完整设备加密存在时存储解密密钥，不设置此项可能会导致无法加密设备
+`canencryptbackup=` -- 1 或 0 启用/禁用，如果用户选择加密（仅适用于 tar 备份，而不是映像），则 TWRP 会加密此分区的备份
+`userdataencryptbackup=` -- 1 或 0 启用/禁用，使 TWRP 仅加密此分区的用户数据部分，某些子数据库（如 /data/app）不会加密以节省时间
+`subpartitionof=` - 必须由等于符号和分区的路径继承，它是子分区。子分区被视为主分区的&quot;部分&quot;，因此，例如，TWRP 会自动使 /data 数据成为 /data 的子分区。这意味着 /data 数据不会显示在 GUI 列表中，但 /datadata 将在对 /data 执行这些操作时擦除、备份、还原、装载和卸载。使用子分区的一个很好的例子是 LG Optimus G 上的 3x efs 分区：</code></pre><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;efs1         emmc   &#x2F;dev&#x2F;block&#x2F;mmcblk0p12 flags&#x3D;backup&#x3D;1;display&#x3D;EFS</span><br><span class="line">&#x2F;efs2         emmc   &#x2F;dev&#x2F;block&#x2F;mmcblk0p13 flags&#x3D;backup&#x3D;1;subpartitionof&#x3D;&#x2F;efs1</span><br><span class="line">&#x2F;efs3         emmc   &#x2F;dev&#x2F;block&#x2F;mmcblk0p14 flags&#x3D;backup&#x3D;1;subpartitionof&#x3D;&#x2F;efs1</span><br><span class="line">&#96;&#96;&#96; </span><br><span class="line">这将将所有 3 个分区合并为 TWRP GUI 中的单个&quot;EFS&quot;条目，允许在单个条目下一起备份和还原所有三个分区。</span><br><span class="line"></span><br><span class="line">自 TWRP 3.2.0 起，TWRP 现在支持 版本 2 fstab，就像多年来在 Android 设备中 fstab 一样。是的，我知道我们采用这个非常缓慢，但我也看到了v2没有重大的优势，v2 fstab正在使用常规的Android以及recoveryy，我不希望因为设置TWRP 标志而出现完整的ROM构建崩溃或做其他奇怪的事情。版本 2 fstab 支持是自动的。您无需添加任何生成标志。常规版本 1 fstab 格式仍然有效，并且可以在相同的 fstab 中使用 v1 和 v2 类型。TWRP 3.2.0 还支持通过 v1 格式的星号作为通配符，这对于具有多个分区的 USB OTG 和微型 SD 卡非常有用。另请注意，v2 fstab 格式尚未经过广泛测试，因此开发人员应在发布给用户之前测试其 v2 fstabs（无论如何，您都应该始终进行测试！)</span><br><span class="line"></span><br><span class="line">这是一行带有用于 USB OTG 驱动器的通配符 的 v1 fstab 配置。当用户插入驱动器时，所有分区都应显示在可用存储设备列表中：</span><br><span class="line"></span><br><span class="line">&#96;&#96;&#96; </span><br><span class="line">&#x2F;usb-otg  vfat   &#x2F;dev&#x2F;block&#x2F;sda*  flags&#x3D;removable;storage;display&#x3D;USB-OTG</span><br><span class="line">&#96;&#96;&#96; </span><br><span class="line">此行是为同一设备直接配置 v2 fstab ，并且应该可以工作。在这种情况下，内核将通知我们，新设备已通过 uevents 添加或删除</span><br></pre></td></tr></table></figure>
+<p>/devices/soc.0/f9200000.ssusb/f9200000.dwc3/xhci-hcd.0.auto/usb*    auto      auto    defaults      voldmanaged=usb:auto</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">除了 v2 fstab 之外，您还可以include 复用 v1 fstab 格式的 &#x2F;etc&#x2F;twrp.flags 。twrp.flags 文件可用于使用 TWRP 标志补充 v2 fstab、特别是v2 fstab 中未包含分区，以及重写 v2 fstab 中的设置。例如，我有一个华为设备，其存储 v2 fstab为 &#x2F;etc&#x2F;recovery.fstab。</span><br><span class="line"></span><br><span class="line">&#96;&#96;&#96;fstab</span><br><span class="line"># Android fstab file.</span><br><span class="line">#&lt;src&gt;                                                  &lt;mnt_point&gt;         &lt;type&gt;    &lt;mnt_flags and options&gt;                       &lt;fs_mgr_flags&gt;</span><br><span class="line"># The filesystem that contains the filesystem checker binary (typically &#x2F;system) cannot</span><br><span class="line"># specify MF_CHECK, and must come before any filesystems that do specify MF_CHECK</span><br><span class="line">&#x2F;dev&#x2F;block&#x2F;bootdevice&#x2F;by-name&#x2F;system    &#x2F;system    ext4    ro,barrier&#x3D;1    wait,verify</span><br><span class="line">&#x2F;dev&#x2F;block&#x2F;bootdevice&#x2F;by-name&#x2F;cust    &#x2F;cust    ext4    ro,barrier&#x3D;1    wait,verify</span><br><span class="line">&#x2F;devices&#x2F;hi_mci.1&#x2F;mmc_host&#x2F;mmc1&#x2F;*                       auto                auto      defaults                                      voldmanaged&#x3D;sdcard:auto,noemulatedsd</span><br><span class="line">&#x2F;devices&#x2F;hisi-usb-otg&#x2F;usb1&#x2F;*                            auto                auto      defaults                                      voldmanaged&#x3D;usbotg:auto</span><br><span class="line">&#x2F;dev&#x2F;block&#x2F;bootdevice&#x2F;by-name&#x2F;userdata         &#x2F;data                f2fs     nosuid,nodev,noatime,discard,inline_data,inline_xattr wait,forceencrypt&#x3D;footer,check</span><br><span class="line">&#x2F;dev&#x2F;block&#x2F;bootdevice&#x2F;by-name&#x2F;cache         &#x2F;cache                ext4      rw,nosuid,nodev,noatime,data&#x3D;ordered wait,check</span><br><span class="line">&#x2F;dev&#x2F;block&#x2F;bootdevice&#x2F;by-name&#x2F;splash2         &#x2F;splash2                ext4      rw,nosuid,nodev,noatime,data&#x3D;ordered,context&#x3D;u:object_r:splash2_data_file:s0 wait,check</span><br><span class="line">&#x2F;dev&#x2F;block&#x2F;bootdevice&#x2F;by-name&#x2F;secure_storage         &#x2F;sec_storage                ext4      rw,nosuid,nodev,noatime,discard,auto_da_alloc,mblk_io_submit,data&#x3D;journal,context&#x3D;u:object_r:teecd_data_file:s0 wait,check</span><br></pre></td></tr></table></figure>
+<p>此外我还include 了 /etc/twrp.flags</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;boot         emmc       &#x2F;dev&#x2F;block&#x2F;platform&#x2F;hi_mci.0&#x2F;by-name&#x2F;boot</span><br><span class="line">&#x2F;recovery     emmc       &#x2F;dev&#x2F;block&#x2F;platform&#x2F;hi_mci.0&#x2F;by-name&#x2F;recovery   flags&#x3D;backup&#x3D;1</span><br><span class="line">&#x2F;cust         ext4       &#x2F;dev&#x2F;block&#x2F;platform&#x2F;hi_mci.0&#x2F;by-name&#x2F;cust       flags&#x3D;display&#x3D;&quot;Cust&quot;;backup&#x3D;1</span><br><span class="line">&#x2F;misc         emmc       &#x2F;dev&#x2F;block&#x2F;platform&#x2F;hi_mci.0&#x2F;by-name&#x2F;misc</span><br><span class="line">&#x2F;oeminfo      emmc       &#x2F;dev&#x2F;block&#x2F;platform&#x2F;hi_mci.0&#x2F;by-name&#x2F;oeminfo    flags&#x3D;display&#x3D;&quot;OEMinfo&quot;;backup&#x3D;1</span><br><span class="line">&#x2F;data         f2fs       &#x2F;dev&#x2F;block&#x2F;dm-0</span><br><span class="line">&#x2F;system_image emmc       &#x2F;dev&#x2F;block&#x2F;platform&#x2F;hi_mci.0&#x2F;by-name&#x2F;system</span><br></pre></td></tr></table></figure>
+
+<p>twrp.flags 中的前 2 行添加了 v2 fstab 中根本不存在的引导和恢复分区。<br>在 twrp.flags 文件中添加 /cust 行是为了告诉 TWRP 允许用户备份 cust 分区，并给它一个稍微更好的显示名称。<br>/misc 分区也只存在于 twrp.flags 文件中。<br>与 /cust 分区类似， /oeminfo 分区位于 twrp.flags 文件中，用于告诉 TWRP 允许用户备份它并给出显示名称。<br>需要 /data 是因为这款华为设备，像许多华为设备一样，使用一些特殊的华为二进制文件加密的，并使用用户无法更改的某种默认密码加密。我们使用华为二进制文件在recovery中自动解密设备。此处的 /data 行告诉 TWRP 使用 <code>/dev/block/dm-0</code>，而不是 <code>/dev/block/bootdevice/by-name/userdata</code>，这是正确挂载所需的，等等。最后，我们有 /system_image 行，以便 TWRP 将添加用于备份和恢复的系统映像选项。</p>
+<p>随着我们添加更多新设备，我们将向 <a href="https://github.com/TeamWin/" target="_blank" rel="noopener">https://github.com/TeamWin/</a> 添加更多示例设备树，这将有助于您找到更多使用此新 fstab 支持的方法。请注意，此时使用 v2 fstab 格式是完全可选的，因此，如果这是更舒适的，或者如果您在 v2 格式支持方面遇到问题，请随时继续使用 v1。</p>
+<p>如果您有任何疑问，请随时在 Freenode 上#twrp。如果你在这里发贴，我可能看不到它一段时间，因为我有很多线程在那里，没有办法，我跟踪他们所有。如果您成功地将TWRP移植到新设备，请告诉我们！我们喜欢听到成功的故事！</p>
+<p>如果您有要提交的代码更改，请通过 <a href="https://gerrit.omnirom.org/" target="_blank" rel="noopener">Omni Gerrit</a> 服务器提交。<a href="http://teamw.in/twrp2-gerrit" target="_blank" rel="noopener">指南在这里</a>。</p>
+<p>一旦你得到Omni或CM同步和你的TWRP标志设置，你应该做一个源./build/envsetup.sh 我们通常lunch device 是有疑问的, 所以像<code>lunch omni_hammerhead-eng</code>这样的格式配置吧.</p>
+<p>在lunch device 后，这是大多数设备使用的命令：</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">make clean &amp;&amp; make -j<span class="comment"># recoveryimage</span></span><br></pre></td></tr></table></figure>
+<p>将 <code>#</code> 替换成cpu 核心数加一, 所以, 如果你是双核的, 就是 -j3, 四核的就是 -j5 等等.<br>如果你移植的是三星设备, 你将会做 </p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">make -j<span class="comment"># bootimage</span></span><br></pre></td></tr></table></figure>
+<p>大多数三星设备的recovery 使用包括ramdisk 的boot.img 替代其他设备上的分开的recovery分区</p>
+<p>旧教程地址: <a href="http://forum.xda-developers.com/show...postcount=1471" target="_blank" rel="noopener">http://forum.xda-developers.com/show...postcount=1471</a></p>
+<h2 id="编译出recovery-支持adb"><a href="#编译出recovery-支持adb" class="headerlink" title="编译出recovery 支持adb"></a>编译出recovery 支持adb</h2><p><a href="https://www.jianshu.com/p/a0bdcce0a5e1" target="_blank" rel="noopener">recovery 下支持Adb</a></p>
+<p><a href="https://blog.csdn.net/c_hnie/article/details/80756568" target="_blank" rel="noopener">adb 下支持shell</a></p>
+<p><a href="https://blog.cofface.com/archives/2647.html" target="_blank" rel="noopener">USB端口对adb, download, mass_message的支持</a></p>
+<h2 id="编译中出的问题"><a href="#编译中出的问题" class="headerlink" title="编译中出的问题"></a>编译中出的问题</h2><ol>
+<li>frameworks 下 undefined module “libskia” …</li>
+</ol>
+<p>export ALLOW_MISSING_DEPENDENCIES=true</p>
+<ol start="2">
+<li>adb, mass_storage 不能识别问题</li>
+</ol>
+<p><a href="https://blog.cofface.com/archives/2647.html" target="_blank" rel="noopener">参考caffee解决方案</a></p>
+<p>在 init.qcom.usb.rc 中添加一个属性</p>
+<p>on property:sys.usb.config=diag,serial_smd,rmnet_bam,mass_storage,adb<br>    stop adbd<br>    write /sys/class/android_usb/android0/enable 0<br>    write /sys/class/android_usb/android0/idVendor 19d2<br>    write /sys/class/android_usb/android0/idProduct ffc1<br>    write /sys/class/android_usb/android0/f_diag/clients diag<br>    write /sys/class/android_usb/android0/f_serial/transports smd<br>    write /sys/class/android_usb/android0/f_rmnet/transports smd,bam<br>    write /sys/class/android_usb/android0/functions diag,serial,rmnet,mass_storage,adb<br>    write /sys/class/android_usb/android0/enable 1<br>    start adbd<br>    setprop sys.usb.state ${sys.usb.config}</p>
+<p>在 system.prop 中添加</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">#Set composition for USB device                </span><br><span class="line">#persist.sys.usb.config&#x3D;diag,serial_smd,rmnet_bam,adb</span><br><span class="line">persist.sys.usb.config&#x3D;diag,serial_smd,rmnet_bam,mass_storage,adb</span><br><span class="line">#For frameworks compatible process between BCM &amp; NXP — xiaoshengtao</span><br><span class="line">ro.config.nfc_chip_model&#x3D;BCM                   </span><br><span class="line">#Set read only default composition for USB     </span><br><span class="line">#ro.sys.usb.default.config&#x3D;diag,serial_smd,rmnet_bam,adb</span><br><span class="line">ro.sys.usb.default.config&#x3D;diag,serial_smd,rmnet_bam,mass_storage,adb</span><br></pre></td></tr></table></figure>
+
+<p>当编译下载后发现usb，adb等都不支持了，只有一个充电。后来听说，MSM8916的<br>USB的端点数不够引起的，无法在现有的端点上面支持过多的设备。据说其中的serial_tty<br>就用到了6路的端点数。</p>
+<p>总结USB的配置必须要和属性事件完全一致，包括其中的功能的顺序。<br>另外idProduct对固件download的影响是通过电脑端的驱动完成的。<br>最后USB的功能不能超过芯片能支持的端点数。</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/ROM/" rel="tag"># ROM</a>
+              <a href="/tags/TWRP/" rel="tag"># TWRP</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2019/08/26/android/rom/android_verify_boot_2/" rel="prev" title="(官方文档)Android Verified Boot 2.0">
+      <i class="fa fa-chevron-left"></i> (官方文档)Android Verified Boot 2.0
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2019/09/10/linux/gentoo_install/" rel="next" title="gentoo 安装">
+      gentoo 安装 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#编译前"><span class="nav-number">1.</span> <span class="nav-text">编译前</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#recovery-fstab"><span class="nav-number">2.</span> <span class="nav-text">recovery.fstab</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#编译出recovery-支持adb"><span class="nav-number">3.</span> <span class="nav-text">编译出recovery 支持adb</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#编译中出的问题"><span class="nav-number">4.</span> <span class="nav-text">编译中出的问题</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Sophimp"
+      src="/images/avatar.png">
+  <p class="site-author-name" itemprop="name">Sophimp</p>
+  <div class="site-description" itemprop="description">A dream begin</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">87</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+        <span class="site-state-item-count">20</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+        <span class="site-state-item-count">90</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/sophimp" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;sophimp" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:sophimp2020@126.com" title="E-Mail → mailto:sophimp2020@126.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Sophimp</span>
+</div>
+
+<!--
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a>
+  </div>
+-->
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="Total Visitors">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="Total Views">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

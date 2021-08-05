@@ -1,0 +1,593 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+  <link rel="stylesheet" href="/lib/pace/pace-theme-minimal.min.css">
+  <script src="/lib/pace/pace.min.js"></script>
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"sophimp.gitee.io","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="Android 逆向技术学习，本文记录在archlinux 下进行android逆向的环境搭建过程, 及需要提前了解的一些概念知识，便于后续的心理模型构建。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Android逆向(1) - archlinux 下的环境搭建及前置知识">
+<meta property="og:url" content="http://sophimp.gitee.io/2020/08/19/android/reverse/android-reverse-env-in-archlinux/index.html">
+<meta property="og:site_name" content="Sophimp&#39;s Space">
+<meta property="og:description" content="Android 逆向技术学习，本文记录在archlinux 下进行android逆向的环境搭建过程, 及需要提前了解的一些概念知识，便于后续的心理模型构建。">
+<meta property="article:published_time" content="2020-08-19T07:30:22.000Z">
+<meta property="article:modified_time" content="2021-03-15T03:49:47.921Z">
+<meta property="article:author" content="Sophimp">
+<meta property="article:tag" content="Android逆向">
+<meta property="article:tag" content="逆向工程">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="http://sophimp.gitee.io/2020/08/19/android/reverse/android-reverse-env-in-archlinux/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-Hans'
+  };
+</script>
+
+  <title>Android逆向(1) - archlinux 下的环境搭建及前置知识 | Sophimp's Space</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+	
+	<script type="text/javascript" src="//cdn.bootcss.com/canvas-nest.js/1.0.0/canvas-nest.min.js"></script>
+	
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Sophimp's Space</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">coding & thinking</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+  <a href="https://github.com/sophimp" class="github-corner" title="Follow me on GitHub" aria-label="Follow me on GitHub" rel="noopener" target="_blank"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
+    <link itemprop="mainEntityOfPage" href="http://sophimp.gitee.io/2020/08/19/android/reverse/android-reverse-env-in-archlinux/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.png">
+      <meta itemprop="name" content="Sophimp">
+      <meta itemprop="description" content="A dream begin">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Sophimp's Space">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Android逆向(1) - archlinux 下的环境搭建及前置知识
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2020-08-19 15:30:22" itemprop="dateCreated datePublished" datetime="2020-08-19T15:30:22+08:00">2020-08-19</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2021-03-15 11:49:47" itemprop="dateModified" datetime="2021-03-15T11:49:47+08:00">2021-03-15</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E9%80%86%E5%90%91%E5%B7%A5%E7%A8%8B/" itemprop="url" rel="index"><span itemprop="name">逆向工程</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="Views" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">Views: </span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span>
+            <div class="post-description">Android 逆向技术学习，本文记录在archlinux 下进行android逆向的环境搭建过程, 及需要提前了解的一些概念知识，便于后续的心理模型构建。</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h3 id="准备工具-安装，使用"><a href="#准备工具-安装，使用" class="headerlink" title="准备工具, 安装，使用"></a>准备工具, 安装，使用</h3><ol>
+<li>可能需要工具</li>
+</ol>
+<table>
+<thead>
+<tr>
+<th align="center">名称</th>
+<th align="center">作用</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">apktool</td>
+<td align="center">用于查看, 解压, 再编译apk</td>
+</tr>
+<tr>
+<td align="center">jadx</td>
+<td align="center">dex 反编译器</td>
+</tr>
+<tr>
+<td align="center">dex2jar</td>
+<td align="center">dex反编译成jar</td>
+</tr>
+<tr>
+<td align="center">frida</td>
+<td align="center">动态调试工具</td>
+</tr>
+<tr>
+<td align="center">xposed</td>
+<td align="center">hook框架, 可用于hook系统,app的api</td>
+</tr>
+<tr>
+<td align="center">ddms</td>
+<td align="center">Dalvik Debug Monitor Service, Dalvik 虚拟机调试监控服务</td>
+</tr>
+<tr>
+<td align="center">wireshark</td>
+<td align="center">抓包工具</td>
+</tr>
+<tr>
+<td align="center">fiddler</td>
+<td align="center">抓包工具</td>
+</tr>
+<tr>
+<td align="center">ida</td>
+<td align="center">可交互式的反汇编器, 在linux, free版本不支持arm架构，正版比较贵, 使用ghidra替代</td>
+</tr>
+<tr>
+<td align="center">Ghidra</td>
+<td align="center">开源的逆向工程分析工具，高度可扩展， 可替代IDA</td>
+</tr>
+<tr>
+<td align="center">gdb</td>
+<td align="center">很强大的调试器, 非常有必要学习</td>
+</tr>
+<tr>
+<td align="center">lldb</td>
+<td align="center">新一代的高性能的调试器</td>
+</tr>
+<tr>
+<td align="center">qemu</td>
+<td align="center">虚拟环境模拟</td>
+</tr>
+<tr>
+<td align="center">platform tools</td>
+<td align="center">android平台工具 logcat, adb, fastboot, linux下的一些工具</td>
+</tr>
+<tr>
+<td align="center">其他工具</td>
+<td align="center">更多的工具随着后面更深入的学习再进行统计, 以上的工具学会使用, 便可以开始初步的逆向学习了。</td>
+</tr>
+<tr>
+<td align="center">uiautomatorview</td>
+<td align="center">android sdk tools下的工具，可以查看当前UI页面的UI层级</td>
+</tr>
+<tr>
+<td align="center">010editor</td>
+<td align="center">二进制查看，编辑工具</td>
+</tr>
+<tr>
+<td align="center">&lt;++&gt;</td>
+<td align="center">&lt;++&gt;</td>
+</tr>
+<tr>
+<td align="center">&lt;++&gt;</td>
+<td align="center">&lt;++&gt;</td>
+</tr>
+</tbody></table>
+<ol start="2">
+<li>工具安装</li>
+</ol>
+<p>archlinux的AUR很强，根据包名模糊搜索, 基本上都可以找到相应的包, packman或yaa安装即可, 有部分包找不到或者是正版的，一般也都会有相关的替代品可用。 目前统计的工具里，就是IDA 使用不了， 这里使用Ghidra替代。</p>
+<p>好的工具可以事半功倍，但是没有了特定的工具，也不是事情就进行不下去了，要么自行开发，要么搜索其他替代的工具, 或组合出工具来使用。关键是要了解所需工具的作用与目的， 抽象出工作流的思维, 完善自己的工具即可。</p>
+<p>当一件事重复性比较高，或者比较耗时耗力， 就需要去寻找或者开发相应的工具来减少工作量。</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 根据包名模糊搜索, 然后找到相应的包安装即可</span></span><br><span class="line">yay -Ss &lt;package_name&gt;</span><br><span class="line">yay -S &lt;package_name&gt;</span><br></pre></td></tr></table></figure>
+
+<ol start="3">
+<li>使用指令</li>
+</ol>
+<blockquote>
+<p>有的工具带有gui, 每个工具肯定会有命令行。 记录一些常用的命令，更详细的使用还需查看文档。</p>
+</blockquote>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># apk 解压</span></span><br><span class="line">apktool d &lt;apkname&gt; [-o &lt;outpath&gt;]</span><br><span class="line"></span><br><span class="line"><span class="comment"># dex 反编译</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># jar 反编译</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># ddms 调试</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 查看当前activity</span></span><br><span class="line">adb shell dumpsys activity top | grep ACTIVITY</span><br></pre></td></tr></table></figure>
+<p><a href="http://gityuan.com/2016/05/14/dumpsys-command/" target="_blank" rel="noopener">dumpsys 指令使用</a><br><a href="https://developer.android.com/studio/command-line?hl=zh-cn" target="_blank" rel="noopener">Android官方提供命令行工具</a></p>
+<ol start="4">
+<li>前置知识</li>
+</ol>
+<p>Android开发技能<br>smali 语法<br>arm汇编指令</p>
+<ol start="5">
+<li>资源</li>
+</ol>
+<p><a href="https://www.bookstack.cn/read/CTF-All-In-One/doc-1.7_android_basic.md" target="_blank" rel="noopener">CTF竞赛入门指南</a> 里有相对较全面的逆向安全方面的学习知识。</p>
+<h3 id="apk-组成"><a href="#apk-组成" class="headerlink" title="apk 组成"></a>apk 组成</h3><p>lib目录：主要存放用C/C++编写的native部分。里面又根据不同的cpu架构存放着不同的so文件，分析so文件的时候就到这个目录里找。</p>
+<p>AndroidManifest.xml文件：资源配置文件，和开发中一样，只不过进行了加密打开全是乱码。</p>
+<p>res目录：和开发时一样，存放着程序会使用到的布局、图片等等资源。</p>
+<p>META-INF目录：保存应用的签名信息，对apk的完整性进行校验，我们逆向对程序进行修改之后都要删掉这个文件重新签名。</p>
+<p>assets目录：存放静态资源，通过AssetsManager类访问，一下加壳的apk会把加密之后的源apk存放在这里。</p>
+<p>resources.arsc文件：用来记录资源文件和资源ID之间的映射关系，用来根据资源ID寻找资源。</p>
+<p>classes.dex文件：开发时所编写的Java部分编译之后就存放在这里。传统的Java编译生成.class文件并运行在JVM上。有可能是谷歌为了规避版权上的纠纷，也有可能是手机的资源有限，谷歌专门设计了Dalvik虚拟机来运行.dex文件。而.dex文件就是经过dx工具对.class文件的常量池进行整合所生成。相比于.class文件，.dex文件体积更小，执行速度更快。并且Java虚拟机基于堆栈，但Dalvik虚拟机基于寄存。</p>
+<p>oat 后缀的文件: 使用dex2oat翻译后的本地机器码文件</p>
+<h3 id="dalvik-和-art-虚拟机"><a href="#dalvik-和-art-虚拟机" class="headerlink" title="dalvik 和 art 虚拟机"></a>dalvik 和 art 虚拟机</h3><p>首先， 不管是 dalvik 还是 art, apk 中所有的代码还是放在 classes.dex 中.<br>区别是:</p>
+<ol>
+<li>dalvik 是实时将 classes.dex 中的java字节码转换成机器码, 而 art 是安装时就转换成机器码。<br> 对于此不同点，art 的优点是字节码加载快，缺点是安装速度慢， 占用更多的磁盘空间， 但对于现在的手机来说， 这点空间是小意思。</li>
+<li>art 对内存回收做了优化</li>
+<li>art 对内存利用率做了优化</li>
+</ol>
+<p>所以， 不管是dalvik 还是 art, classes.dex 还是通用的字节码文件， 反译出来是 smali 语言<br>smali 语言是虚拟机字节码的汇编语言，通过编译器编译成不同平台的字节码</p>
+<p>因此，逆向的大体思路仍是反编译apk中的dex, 再将dex反编译成jar, 可以调试smali语言，也可以看反编译后的java代码，由于混淆等反逆向手段， 通常都是两个语言结合着看, 逆向出上层逻辑。</p>
+<h3 id="心理模型"><a href="#心理模型" class="headerlink" title="心理模型"></a>心理模型</h3><p>心理模型，是用于解释人的内部心理活动过程而构造的一种比拟性的描述或表示; 是经过组织的知识结构，使个体能与环境相互作用; 是对于周遭世界如何运作的看法和行为。 </p>
+<p>我所理解的心理模型， 就是在处理一个问题，一件事的时候，心是所想，大脑所思考的一种方式， 抽象成一种流程，一种套路， 一个思维框架。<br>不同领域，有不同的心理模型， 逆向的思维会涉及到不同的领域，每个领域会有不同的心理模型，而逆向本身也有一些共通的心理模型。</p>
+<p>逆向的心理模型的建立过程涉及到: 编译与反编译, 对抗反逆向，工具的使用，正向开发的思维，底层承载框架的原理, 逆向需求目标</p>
+<p>逆向的通用模型:<br>    反编译出可阅读代码, 这里需要对抗反编译手段，如混淆，加壳, 虚拟机保护<br>    查找，学习工具的使用，将贯穿整个逆向过程，脱壳工具，反编译工具，调试工具，抓包工具，内存读取, 虚拟机环境等等<br>    然后是分析代码，这个过程需要有目标的去定位，通过运行相关的业务，抓包，查看信息栈等手段，找到特征字符串，类名，方法名，再定位到源码位置去分析。<br>    接着是提高代码分析的效率， 就需要借助各种调试工具。<br>    接下来的攻击的步骤, 涉及到注入，hook, 回编, 代理等手段。</p>
+<p>其他专业的心理模型:<br>    这与具体的业务领域强相关，大多数时候必须得懂正向的开发知识，思路会更加清晰，也会更加高效。</p>
+<p>逆向是渗透的一个分支， 相对于代码层面的技术分支， 渗透还包括社会工程学， 认知心理学, 网络安全，物理渗透等。</p>
+<p>逆向是一把双刃剑，游走在善与恶的边缘, 一念之间就是白帽子与黑客的转换。</p>
+<p>这里有一篇<a href="https://zhuanlan.zhihu.com/p/142298179" target="_blank" rel="noopener">逆向工程经验谈</a>讲得不错。</p>
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>在linux下搞Android逆向好像更加合适，毕竟Android使用linux内核，链接库和可执行文件都是elf, 工具链高度重合, 缺点是，工具使用也需要学习成本，想要达到一个高效的工作流，学习门槛是比较高的， 然而我认为这是值得的。</p>
+<p>逆向心理模型的建立是很有必要的， 心理模型也相当于战略思维，能保证大方向不走弯路，继而更准确地去解决所遇到的更具体的问题。</p>
+<p>搞逆向前，需要先搞几年的正向开发， 个人是赞同的。</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Android%E9%80%86%E5%90%91/" rel="tag"># Android逆向</a>
+              <a href="/tags/%E9%80%86%E5%90%91%E5%B7%A5%E7%A8%8B/" rel="tag"># 逆向工程</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2020/08/13/linux/concepts-in-linux/" rel="prev" title="linux 系统中的概念">
+      <i class="fa fa-chevron-left"></i> linux 系统中的概念
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2020/08/20/vim/vim-study-basic/" rel="next" title="vim 学习系列之(2) -- vim 基础操作">
+      vim 学习系列之(2) -- vim 基础操作 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#准备工具-安装，使用"><span class="nav-number">1.</span> <span class="nav-text">准备工具, 安装，使用</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#apk-组成"><span class="nav-number">2.</span> <span class="nav-text">apk 组成</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#dalvik-和-art-虚拟机"><span class="nav-number">3.</span> <span class="nav-text">dalvik 和 art 虚拟机</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#心理模型"><span class="nav-number">4.</span> <span class="nav-text">心理模型</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#总结"><span class="nav-number">5.</span> <span class="nav-text">总结</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Sophimp"
+      src="/images/avatar.png">
+  <p class="site-author-name" itemprop="name">Sophimp</p>
+  <div class="site-description" itemprop="description">A dream begin</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">87</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+        <span class="site-state-item-count">20</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+        <span class="site-state-item-count">90</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/sophimp" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;sophimp" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:sophimp2020@126.com" title="E-Mail → mailto:sophimp2020@126.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Sophimp</span>
+</div>
+
+<!--
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a>
+  </div>
+-->
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="Total Visitors">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="Total Views">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

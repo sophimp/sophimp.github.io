@@ -248,7 +248,7 @@
 <p>The Change-Id is a SHA-1 that is prefixed with an uppercase I. It is specified as footer in the commit message (last paragraph):</p>
 <p>  Improve foo widget by attaching a bar.</p>
 <p>  We want a bar, because it improves the foo by providing more<br>  wizbangery to the dowhatimeanery.</p>
-<p>  Bug: #42<br>  Change-Id: Ic8aaa0728a43936cd4c6e1ed590e01ba8f0fbf5b<br>  Signed-off-by: A. U. Thor <a href="mailto:&#97;&#x75;&#116;&#x68;&#111;&#114;&#64;&#101;&#x78;&#x61;&#109;&#x70;&#x6c;&#x65;&#46;&#x63;&#x6f;&#109;">&#97;&#x75;&#116;&#x68;&#111;&#114;&#64;&#101;&#x78;&#x61;&#109;&#x70;&#x6c;&#x65;&#46;&#x63;&#x6f;&#109;</a><br>If a commit that has a Change-Id in its commit message is pushed for review, Gerrit checks if a change with this Change-Id already exists for this project and target branch, and if yes, Gerrit creates a new patch set for this change. If not, a new change with the given Change-Id is created.</p>
+<p>  Bug: #42<br>  Change-Id: Ic8aaa0728a43936cd4c6e1ed590e01ba8f0fbf5b<br>  Signed-off-by: A. U. Thor <a href="mailto:&#x61;&#117;&#x74;&#x68;&#111;&#114;&#64;&#101;&#120;&#x61;&#109;&#112;&#108;&#101;&#x2e;&#x63;&#x6f;&#x6d;">&#x61;&#117;&#x74;&#x68;&#111;&#114;&#64;&#101;&#120;&#x61;&#109;&#112;&#108;&#101;&#x2e;&#x63;&#x6f;&#x6d;</a><br>If a commit that has a Change-Id in its commit message is pushed for review, Gerrit checks if a change with this Change-Id already exists for this project and target branch, and if yes, Gerrit creates a new patch set for this change. If not, a new change with the given Change-Id is created.</p>
 <p>If a commit without Change-Id is pushed for review, Gerrit creates a new change and generates a Change-Id for it. Since in this case the Change-Id is not included in the commit message, it must be manually inserted when a new patch set should be uploaded. Most projects already require a Change-Id when pushing the very first patch set. This reduces the risk of accidentally creating a new change instead of uploading a new patch set. Any push without Change-Id then fails with missing Change-Id in commit message footer.</p>
 <p>Amending and rebasing a commit preserves the Change-Id so that the new commit automatically becomes a new patch set of the existing change, when it is pushed for review.</p>
 <p>Push new Patch Set<br>  $ git commit –amend<br>  $ git push origin HEAD:refs/for/master<br>Change-Ids are unique for a branch of a project. E.g. commits that fix the same issue in different branches should have the same Change-Id, which happens automatically if a commit is cherry-picked to another branch. This way you can search by the Change-Id in the Gerrit web UI to find a fix in all branches.</p>
@@ -533,12 +533,12 @@
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
-        <span class="site-state-item-count">20</span>
+        <span class="site-state-item-count">19</span>
         <span class="site-state-item-name">categories</span></a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
-        <span class="site-state-item-count">90</span>
+        <span class="site-state-item-count">89</span>
         <span class="site-state-item-name">tags</span></a>
       </div>
   </nav>
